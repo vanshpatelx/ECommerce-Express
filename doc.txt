@@ -1,0 +1,62 @@
+Endpoints
+
+1. Auth
+POST /api/v1/register - adding new user
+POST /api/v1/login - login user
+
+2. Seller
+POST /api/v1/seller - addding Seller
+PATCH /api/v1/seller - updating Seller
+
+GET /api/v1/inventory - Get inventory - seller
+
+
+3. Product
+POST /api/v1/product - adding Product - seller
+PATCH /api/v1/product - updating Product - seller
+DELETE /api/v1/product - DELETE Product - seller
+
+4. Order
+POST /api/v1/order - Creating order - customer
+PATCH /api/v1/order - Updating order - seller
+
+PATCH /api/v1/orderstatus - updating order status - seller
+
+5. Customer
+POST /api/v1/customer - addding customer
+PATCH /api/v1/customer - updating customer
+
+GET /api/v1/corders - get all order details - customer
+GET /api/v1/corder - get order details - customer
+GET /api/v1/sorders - get all order details - seller
+GET /api/v1/sorder - get order details - seller
+
+
+6. Wishlist
+POST /api/v1/wishlist - adding product to wishlist - customer
+PATCH /api/v1/wishlist - updating product to wishlist - customer
+DELETE /api/v1/wishlist - deleting product to wishlist - customer
+
+GET /api/v1/wishlist - getitng wishlist - customer
+
+7. Products
+GET /api/v1/products - getting all products
+GET /api/v1/product - getting Specific Product
+
+GET /api/v1/sproduct - getting all specific seller Products 
+
+8. Reviews
+
+GET /api/v1/product/review - getting review for products - customer
+POST /api/v1/product/review - adding review for products - customer
+PATCH /api/v1/product/review - updating review for products - customer
+
+GET /api/v1/seller/product/review/ - getting review for products from specific seller - seller
+
+
+
+9. Admin
+GET all users
+GET all Customers
+GET specific user
+GET specific customer
