@@ -2,10 +2,16 @@ const express = require('express');
 const app = express();
 require('dotenv').config();
 const PORT = process.env.PORT;
+const passportLocal = require('./auth/local.Passport');
+const passportJWT = require('./auth/jwt.Passport');
+
 
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(passportLocal.initialize());
+app.use(passportJWT.initialize());
+
 
 
 // Routes Imports
