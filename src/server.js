@@ -3,7 +3,8 @@ const app = express();
 require('dotenv').config();
 const PORT = process.env.PORT;
 const passportLocal = require('./auth/local.Passport');
-const passportJWT = require('./auth/jwt.Passport');
+const passportJWT = require('./auth/jwt.Passport'); 
+const connectDB = require('./config/mongoDBConnect'); // Auto-Connected - For more view code files
 
 
 // Middlewares
@@ -11,7 +12,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(passportLocal.initialize());
 app.use(passportJWT.initialize());
-
 
 
 // Routes Imports

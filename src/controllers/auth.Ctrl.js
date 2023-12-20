@@ -1,9 +1,8 @@
 const userModel = require("../models/user.Model");
-const CryptoJS = require("crypto-js");
-const CryptoSECRET = process.env.CryptoSECRET;
 const generateToken = require('../auth/jwt');
 const passportLocal = require('../auth/local.Passport');
-
+const hashingstr = require('hashingstr');
+const HashAlgo = process.env.HashAlgo;
 
 const registerUser = async (req, res) => {
     try {
@@ -24,7 +23,8 @@ const registerUser = async (req, res) => {
         }
 
         // Encrypt password
-        const hashedPassword = await CryptoJS.AES.encrypt(password, CryptoSECRET).toString();
+        // const hashedPassword = await CryptoJS.AES.encrypt(password, CryptoSECRET).toString();
+        const hashedPassword = await hashingstr.hash(HashAlgo, password);
 
         const newUser = new userModel({
             email: email,
@@ -37,7 +37,7 @@ const registerUser = async (req, res) => {
         await newUser.save();
 
         // JWT
-        const token = generateToken(newUser);
+        const token = await generateToken(newUser);
 
         return res.status(200).json({ message: 'User registered successfully', token });
     } catch (err) {
@@ -45,13 +45,21 @@ const registerUser = async (req, res) => {
     }
 };
 
-const loginUser = async (req, res) => {
-    passportLocal.authenticate('local', { session: false }, (err, user) => {
-        const token = generateToken(user);
-        res.json({ message: 'User logged in successfully', token });
+const loginUser = (req, res) => {
+    passportLocal.authenticate('local', { session: false }, async (err, user) => {
+      if (err) {
+        return res.status(500).json({ message: 'Error during authentication', error: err.message });
+      }
+      if (!user) {
+        return res.status(401).json({ message: 'Incorrect email or password.' });
+      }
+  
+      // Generating Token
+      const token = await generateToken(user);
+      res.json({ message: 'User logged in successfully', token });
     })(req, res);
-};
-
+  };
+  
 
 module.exports = {
     registerUser,

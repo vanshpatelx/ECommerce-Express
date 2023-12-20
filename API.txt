@@ -1,0 +1,14 @@
+POST - http://localhost:9999/api/v1/register
+
+{
+  "email": "user@gmail.com",
+  "password": "password",
+  "type": "Customer"
+}
+
+POST http://localhost:9999/api/v1/login
+
+{
+	"message": "User logged in successfully",
+	"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NTgzMDg4MTAzNTY0NmEzOGUyODhhNmIiLCJlbWFpbCI6InVzZXJAZ21haWwuY29tIiwiaWF0IjoxNzAzMDg2Mjg2LCJleHAiOjE3MDM2OTEwODZ9.h2T17JF1j41hNy-TWKAKS66vSA3CUsP-Q9pDxrLV_m0"
+}
