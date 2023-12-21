@@ -3,7 +3,7 @@
 - [x] DB Models
 - [x] Endpoints
 - [x] Structure Project
-- [ ] Solving bugs in Regsiter & LogIn
+- [X] Solving bugs in Regsiter & LogIn
 - [ ] Writing all Controllers with Middleware
 - [ ] Testing
 - [ ] API Documentation
