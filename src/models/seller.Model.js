@@ -3,7 +3,6 @@
 const addressSchema = new mongoose.Schema({
     street_name :{
         type : String,
-        required: true
     },
     area : {
         type: String
@@ -11,43 +10,34 @@ const addressSchema = new mongoose.Schema({
     details : {
         city : {
             type : String,
-            required: true
         },
         zip : {
             type : Number,
-            required: true
         },
         state : {
             type : String,
-            required: true
         },
         country : {
             type : String,
-            required: true
         }
     }
 })
 
 const contactSchema = new mongoose.Schema({
     num : {
-        required : true,
         contry_code : {
             type : String,
-            required: true
         },
         number : {
             type : String,
-            required: true
         }
     },
     extra_num : {
         contry_code : {
             type : String,
-            required: true
         },
         number : {
             type : String,
-            required: true
         }
     },
     extra_email : {
@@ -60,11 +50,9 @@ const inventorySchema = new mongoose.Schema({
     product : {
         type : mongoose.Types.ObjectId,
         ref: 'Product',
-        required: true
     },
     Qty : {
         type : Number,
-        required: true
     }
 });
 
@@ -73,7 +61,6 @@ const order = new mongoose.Schema({
     product : {
         type : mongoose.Types.ObjectId,
         ref : 'Product',
-        required: true
     }
 });
 

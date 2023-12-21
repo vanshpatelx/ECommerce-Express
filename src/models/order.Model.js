@@ -8,15 +8,12 @@ const productDetails = new mongoose.Schema({
     },
     Qty: {
         type: Number,
-        required: true
     },
     PPU: {
         type: Number,
-        required: true
     },
     total_price: {
         type: Number,
-        required: true
     }
 })
 
