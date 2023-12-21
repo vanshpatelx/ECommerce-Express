@@ -12,3 +12,55 @@ POST http://localhost:9999/api/v1/login
 	"message": "User logged in successfully",
 	"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NTgzMDg4MTAzNTY0NmEzOGUyODhhNmIiLCJlbWFpbCI6InVzZXJAZ21haWwuY29tIiwiaWF0IjoxNzAzMDg2Mjg2LCJleHAiOjE3MDM2OTEwODZ9.h2T17JF1j41hNy-TWKAKS66vSA3CUsP-Q9pDxrLV_m0"
 }
+
+POST http://localhost:9999/api/v1/customer
+
+{
+  "user_address": {
+    "street_name": "123 Main St",
+    "area": "Downtown",
+    "details": {
+      "city": "Example City",
+      "zip": 12345,
+      "state": "Example State",
+      "country": "Example Country"
+    }
+  },
+  "contant_info": {
+    "num": {
+      "contry_code": "+1",
+      "number": "1234567890"
+    },
+    "extra_num": {
+      "contry_code": "+1",
+      "number": "9876543210"
+    },
+    "extra_email": "example@email.com"
+	}
+}
+
+PATCH http://localhost:9999/api/v1/customer
+
+{
+  "user_address": {
+    "street_name": "123 Main",
+    "area": "Downtown",
+    "details": {
+      "city": "Example City",
+      "zip": 12345,
+      "state": "Example State",
+      "country": "Example Country"
+    }
+  },
+  "contant_info": {
+    "num": {
+      "contry_code": "+1",
+      "number": "1234567890"
+    },
+    "extra_num": {
+      "contry_code": "+1",
+      "number": "9876543210"
+    },
+    "extra_email": "example@email.com"
+	}
+}

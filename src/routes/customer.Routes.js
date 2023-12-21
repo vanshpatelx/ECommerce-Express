@@ -1,10 +1,11 @@
 const router = require('express').Router();
 const customerCtrl = require('../controllers/customer.Ctrl');
+const authenticateJWT = require('../middleware/JWTMiddleware');
 
 
 
-router.post('/customer', customerCtrl.addCustomer);
-router.patch('/customer', customerCtrl.updateCustomer);
+router.post('/customer', authenticateJWT, customerCtrl.addCustomer);
+router.patch('/customer',authenticateJWT, customerCtrl.updateCustomer);
 
 // wishlist
 router.get('/customer/wishlist', customerCtrl.getWishlist);
