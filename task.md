@@ -5,6 +5,14 @@
 - [x] Structure Project
 - [X] Solving bugs in Regsiter & LogIn
 - [ ] Writing all Controllers with Middleware
+  - [x] Auth
+  - [x] Customer
+  - [ ] Seller
+  - [ ] Product
+  - [ ] Order
+  - [ ] Wishlist
+  - [ ] Reviews
+  - [ ] Admin
 - [ ] Testing
 - [ ] API Documentation
 - [ ] Containerisation
