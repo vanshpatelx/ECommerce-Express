@@ -34,14 +34,14 @@ const addCustomer = async (req, res) => {
 
 
         // Update the user document with the customer_id
-        const userToUpdate = await userModel.findOne({ user_id: user_id, type: 'Seller' });
+        const userToUpdate = await userModel.findOne({ user_id: user_id, type: 'Customer' });
 
         if (userToUpdate) {
-            // If the user type is 'Seller', update the seller_id
+            // If the user type is 'Customer', update the customer_id
             await userModel.findOneAndUpdate({ user_id: user_id }, { customer_id: newCustomer._id });
         } else {
-            // Handle the case where the user type is not 'Seller'
-            console.log('User is not a Seller. No update performed.');
+            // Handle the case where the user type is not 'Customer'
+            console.log('User is not a Customer. No update performed.');
         }
 
 
