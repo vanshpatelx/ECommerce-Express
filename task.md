@@ -7,7 +7,7 @@
 - [ ] Writing all Controllers with Middleware
   - [x] Auth
   - [x] Customer
-  - [ ] Seller
+  - [x] Seller
   - [ ] Product
   - [ ] Order
   - [ ] Wishlist
