@@ -9,9 +9,9 @@ const getInventory = async (req,res) => {
 const addSeller = async (req,res) => {
     try {
         const user_id = req.user.sub;
-        const { seller_address, contant_info } = req.body;
+        const { seller_address, contact_info } = req.body;
 
-        if (!seller_address || !contant_info) {
+        if (!seller_address || !contact_info) {
             return res.status(400).json({
                 message: 'Fill all fields in Seller registration'
             });
@@ -29,9 +29,9 @@ const addSeller = async (req,res) => {
         const Seller = new sellerModel({
             user_id: user_id,
             seller_address: seller_address,
-            contant_info: contant_info,
-            product_inventory: null,
-            order_info: null
+            contact_info: contact_info,
+            product_inventory: [],
+            order_info: []
         });
 
 
@@ -58,13 +58,13 @@ const addSeller = async (req,res) => {
 const updateSeller = async (req,res) => {
     try {
         const user_id = req.user.sub;
-        const { seller_address, contant_info } = req.body;
+        const { seller_address, contact_info } = req.body;
 
         await sellerModel.findOneAndUpdate({
             user_id : user_id
         }, {
             seller_address : seller_address,
-            contant_info : contant_info
+            contact_info : contact_info
         })
 
         return res.status(200).json({ message: 'Seller updated successfully' });

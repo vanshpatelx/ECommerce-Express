@@ -17,11 +17,11 @@ const userSchema = new mongoose.Schema({
         default : 'Customer'
     },
     seller_id : {
-        type : mongoose.Types.ObjectId,
+        type : mongoose.Schema.Types.ObjectId,
         ref : 'Seller'
     },
     customer_id : {
-        type : mongoose.Types.ObjectId,
+        type : mongoose.Schema.Types.ObjectId,
         ref : 'Customer'
     }
 }, {timestamps: true});

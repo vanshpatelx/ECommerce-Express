@@ -48,18 +48,15 @@ const contactSchema = new mongoose.Schema({
 
 const inventorySchema = new mongoose.Schema({
     product : {
-        type : mongoose.Types.ObjectId,
+        type : mongoose.Schema.Types.ObjectId,
         ref: 'Product',
-    },
-    Qty : {
-        type : Number,
     }
 });
 
 
 const order = new mongoose.Schema({
     product : {
-        type : mongoose.Types.ObjectId,
+        type : mongoose.Schema.Types.ObjectId,
         ref : 'Product',
     }
 });
@@ -67,7 +64,7 @@ const order = new mongoose.Schema({
 
 const sellerSchema = new mongoose.Schema({
     user_id : {
-        type : mongoose.Types.ObjectId,
+        type : mongoose.Schema.Types.ObjectId,
         ref : 'User',
         required: true
     },
@@ -75,7 +72,7 @@ const sellerSchema = new mongoose.Schema({
         type : addressSchema,
         required : true
     },
-    contant_info : {
+    contact_info : {
         type : contactSchema,
         required: true
     },

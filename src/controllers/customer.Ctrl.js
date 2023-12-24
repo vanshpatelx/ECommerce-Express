@@ -25,8 +25,8 @@ const addCustomer = async (req, res) => {
             user_id: user_id,
             user_address: user_address,
             contant_info: contant_info,
-            wishlist: null,
-            order_info: null
+            wishlist: [],
+            order_info: []
         });
 
 

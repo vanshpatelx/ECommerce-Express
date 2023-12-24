@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 
 const reviews = new mongoose.Schema({
     customer: {
-        type : mongoose.Types.ObjectId,
+        type : mongoose.Schema.Types.ObjectId,
         ref : 'Customer'
     },
     msg: {
-        type : String
+        type : String   
     },
     star: {
         type : Number,
@@ -27,8 +27,8 @@ const productSchema = new mongoose.Schema({
         type : Number,
         required : true
     },
-    available: {
-        type : Boolean,
+    qty: {
+        type : Number,
         required: true
     },
     discounted_rate: {
@@ -36,7 +36,7 @@ const productSchema = new mongoose.Schema({
         required : true
     },
     seller: {
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Seller',
         required: true
     },

@@ -47,14 +47,14 @@ const contactSchema = new mongoose.Schema({
 
 const wishlist = new mongoose.Schema({
     product : {
-        type : mongoose.Types.ObjectId,
+        type : mongoose.Schema.Types.ObjectId,
         ref : 'Product',
     }
 });
 
 const order = new mongoose.Schema({
     product : {
-        type : mongoose.Types.ObjectId,
+        type : mongoose.Schema.Types.ObjectId,
         ref : 'Product',
     }
 });
@@ -62,7 +62,7 @@ const order = new mongoose.Schema({
 
 const customerSchema = new mongoose.Schema({
     user_id : {
-        type : mongoose.Types.ObjectId,
+        type : mongoose.Schema.Types.ObjectId,
         ref : 'User',
         required: true
     },
