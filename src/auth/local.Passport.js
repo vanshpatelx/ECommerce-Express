@@ -17,7 +17,6 @@ passportLocal.use(new LocalStrategy({ usernameField: 'email' }, async (email, pa
 
         const hashedPassword = await hashingstr.hash(HashAlgo, password, user.password);
 
-        console.log(hashedPassword);
         if (hashedPassword) {
             // Passwords match
             return done(null, user);
