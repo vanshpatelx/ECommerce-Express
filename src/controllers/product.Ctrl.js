@@ -1,6 +1,7 @@
 const sellerModel = require("../models/seller.Model");
 const { getImageUrls, deleteImage } = require('../config/ImageUpload');
 const productModel = require("../models/product.model");
+const customerModel = require("../models/customer.Model");
 
 const creatProduct = async (req, res) => {
     try {
@@ -299,26 +300,227 @@ const getAllProductBySearch = async (req, res) => {
 
 };
 
-const getAllReview = async (req, res) => {
+const getAllReviewOfProduct = async (req, res) => {
+    try {
+        // Get product Id from request parameters or query
+        const productId = req.params.productId || req.query.productId;
 
+        // Check if the product exists and populate all data, including reviews
+        const product = await productModel.findById(productId)
+
+        if (!product) {
+            return res.status(404).json({
+                message: 'Product not found'
+            });
+        }
+
+
+        const formattedReviews = product.reviews.map((review) => ({
+            _id: review._id,
+            msg: review.msg,
+            star: review.star
+        }));
+
+        return res.status(200).json({
+            message: 'Fetched All Reviews for Specific Product',
+            reviews: formattedReviews
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            message: 'Error in fetching Reviews'
+        });
+    }
 };
+
 
 
 const createReview = async (req, res) => {
+    try {
+        // Get Information from Body
+        const customer = req.user.sub;
+        const product = req.query.productId
+        const { msg, star } = req.body;
 
+        if (!customer || !product || !msg || !star) {
+            return res.status(400).json({
+                message: 'Fill all fields in Review Add'
+            });
+        }
+
+        // Is user already registered? Check in DB
+        const customerData = await customerModel.findOne({ user_id: customer });
+
+        if (!customerData) {
+            return res.status(400).json({
+                message: 'Customer is Not Exists'
+            });
+        }
+
+
+        // Check if the product exists
+        const existingProduct = await productModel.findById({ _id: product });
+        if (!existingProduct) {
+            return res.status(404).json({
+                message: 'Product not found'
+            });
+        }
+
+        // Add review
+        const newReview = {
+            customer: customer,
+            msg: msg,
+            star: Number(star)
+        }
+
+        existingProduct.reviews.push(newReview);
+
+        await existingProduct.save();
+
+        existingProduct.seller = null;
+        return res.status(200).json({ message: 'Review Added successfully', existingProduct });
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'Error in adding Review' });
+    }
 };
 
 const updateReview = async (req, res) => {
+    try {
+        // Get Information from Body
+        const customer = req.user.sub;
+        const product = req.query.productId;
+        const reviewId = req.query.reviewId;
+        const { msg, star } = req.body;
 
+        if (!customer || !product || !reviewId || !msg || !star) {
+            return res.status(400).json({
+                message: 'Fill all fields in Review Update'
+            });
+        }
+
+        // Check if the product exists
+        const existingProduct = await productModel.findById({ _id: product });
+        if (!existingProduct) {
+            return res.status(404).json({
+                message: 'Product not found'
+            });
+        }
+
+        // Find the review by reviewId
+        const reviewToUpdate = existingProduct.reviews.find(
+            (review) => review._id.toString() === reviewId
+        );
+
+        console.log(reviewToUpdate);
+        // Check if the review exists
+        if (!reviewToUpdate) {
+            return res.status(404).json({
+                message: 'Review not found'
+            });
+        }
+
+        // Check if the review belongs to the current customer
+        if (reviewToUpdate.customer.toString() !== customer) {
+            return res.status(403).json({
+                message: 'You are not authorized to update this review'
+            });
+        }
+
+        // Update review
+        reviewToUpdate.msg = msg;
+        reviewToUpdate.star = Number(star);
+
+        await existingProduct.save();
+        existingProduct.seller = null;
+        return res.status(200).json({ message: 'Review Updated successfully', existingProduct });
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'Error in updating Review' });
+    }
 };
+
 
 const deleteReview = async (req, res) => {
+    try {
+        // Get Information from Body
+        const customer = req.user.sub;
+        const product = req.query.productId;
+        const reviewId = req.query.reviewId;
 
+        if (!customer || !product || !reviewId) {
+            return res.status(400).json({
+                message: 'Fill all fields in Review Delete'
+            });
+        }
+
+        // Check if the product exists and delete the review
+        const existingProduct = await productModel.findByIdAndUpdate(
+            product,
+            {
+                $pull: {
+                    reviews: {
+                        _id: reviewId,
+                        customer: customer
+                    }
+                }
+            },
+            { new: true }
+        );
+
+        if (!existingProduct) {
+            return res.status(404).json({
+                message: 'Product not found or Review not found'
+            });
+        }
+
+        return res.status(200).json({ message: 'Review Deleted successfully' });
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'Error in deleting Review' });
+    }
 };
+
 
 const getAllReviewForSeller = async (req, res) => {
+    try {
+        const sellerId = req.user.sub;
 
+        // Check if the seller exists
+        const seller = await sellerModel.findOne({ user_id: sellerId }).populate('product_inventory.product');
+
+        if (!seller) {
+            return res.status(400).json({
+                message: 'Seller does not exist'
+            });
+        }
+
+        // Extract product information from the populated field
+        const products = seller.product_inventory.map((item) => item.product);
+
+        // Collect all reviews for the seller'
+        const allReviews = [];
+        products.forEach((product) => {
+            if (product.reviews.toString && product.reviews.length > 0) {
+                allReviews.push(...product.reviews);
+            }
+        });
+
+        return res.status(200).json({
+            message: 'Fetched All Reviews for Specific Seller',
+            reviews: allReviews
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            message: 'Error in fetching Reviews'
+        });
+    }
 };
+
 
 module.exports = {
     creatProduct,
@@ -328,7 +530,7 @@ module.exports = {
     getProduct,
     getAllProductBySearch,
     getAllProductBySeller,
-    getAllReview,
+    getAllReviewOfProduct,
     createReview,
     updateReview,
     deleteReview,

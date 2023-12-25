@@ -14,11 +14,11 @@ router.get('/products/seller', authenticateJWT, productCtrl.getAllProductBySelle
 router.get('/products/search', productCtrl.getAllProductBySearch);
 
 // Review
-router.get('/product/review', productCtrl.getAllReview);
-router.post('/product/review', productCtrl.createReview);
-router.patch('/product/review', productCtrl.updateReview);
-router.delete('/product/review', productCtrl.deleteReview);
-router.get('/product/review/seller', productCtrl.getAllReviewForSeller);
+router.get('/product/review', authenticateJWT, productCtrl.getAllReviewOfProduct);
+router.post('/product/review', authenticateJWT, productCtrl.createReview);
+router.patch('/product/review', authenticateJWT, productCtrl.updateReview);
+router.delete('/product/review', authenticateJWT, productCtrl.deleteReview);
+router.get('/product/review/seller', authenticateJWT, productCtrl.getAllReviewForSeller);
 
 
 module.exports = router;

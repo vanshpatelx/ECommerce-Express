@@ -11,7 +11,7 @@
   - [x] Product
   - [ ] Order
   - [ ] Wishlist
-  - [ ] Reviews
+  - [X] Reviews
   - [ ] Admin
 - [ ] Testing
 - [ ] API Documentation
