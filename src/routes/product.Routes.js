@@ -1,11 +1,13 @@
 const router = require('express').Router();
 
 const productCtrl = require('../controllers/product.Ctrl');
+const { uploadImages } = require('../config/ImageUpload');
+const authenticateJWT = require('../middleware/JWTMiddleware');
 
 
-router.post('/product', productCtrl.creatProduct);
-router.patch('/product', productCtrl.updateProduct);
-router.delete('/product', productCtrl.deleteProduct);
+router.post('/product', authenticateJWT, uploadImages('files', 5), productCtrl.creatProduct);
+router.patch('/product', authenticateJWT, uploadImages('files', 5), productCtrl.updateProduct);
+router.delete('/product', authenticateJWT, productCtrl.deleteProduct);
 router.get('/product', productCtrl.getProduct);
 router.get('/products', productCtrl.getAllProduct);
 router.get('/products/seller', productCtrl.getAllProductBySeller);

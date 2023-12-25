@@ -26,7 +26,7 @@ POST http://localhost:9999/api/v1/customer
       "country": "Example Country"
     }
   },
-  "contant_info": {
+  "contact_info": {
     "num": {
       "contry_code": "+1",
       "number": "1234567890"
@@ -52,7 +52,7 @@ PATCH http://localhost:9999/api/v1/customer
       "country": "Example Country"
     }
   },
-  "contant_info": {
+  "contact_info": {
     "num": {
       "contry_code": "+1",
       "number": "1234567890"
@@ -64,3 +64,18 @@ PATCH http://localhost:9999/api/v1/customer
     "extra_email": "example@email.com"
 	}
 }
+
+
+POST http://localhost:9999/api/v1/product
+
+
+{
+  "name": "Product Name",
+  "real_price": 50.00,
+  "qty": 2,
+  "discounted_rate": 0.10
+}
+
+
+image as "files" -> max 5 allowd at time
+

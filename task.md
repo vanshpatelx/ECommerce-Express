@@ -17,3 +17,11 @@
 - [ ] API Documentation
 - [ ] Containerisation
 - [ ] Documentation + ENV + Readme
+- [ ] Logging
+- [ ] Error Handler
+
+
+-> Problems
+1. How to store images or static files ?
+2. How to search products ?
+3. How to query fast ? -> Data Association
