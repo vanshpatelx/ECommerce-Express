@@ -8,7 +8,7 @@
   - [x] Auth
   - [x] Customer
   - [x] Seller
-  - [ ] Product
+  - [x] Product
   - [ ] Order
   - [ ] Wishlist
   - [ ] Reviews

@@ -207,16 +207,86 @@ const deleteProduct = async (req, res) => {
 };
 
 const getProduct = async (req, res) => {
+    try {
+        // Get Specific Product
+        const productId = req.query.productId;
 
+        // Check if the product exists
+        const existingProduct = await productModel.findById({ _id: productId });
+        if (!existingProduct) {
+            return res.status(404).json({
+                message: 'Product not found'
+            });
+        }
+
+        console.log(existingProduct);
+        // Hide Details
+        existingProduct.seller = null;
+
+        return res.status(200).json({ message: 'Fetched Specific Product', existingProduct });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'Error in fetching Product' });
+    }
 };
 
 const getAllProduct = async (req, res) => {
+    try {
+        // Get All Products
+        const allProducts = await productModel.find({});
 
+        // Check if any products exist
+        if (!allProducts || allProducts.length === 0) {
+            return res.status(404).json({
+                message: 'No products found'
+            });
+        }
+
+        // Hide seller details in each product
+        const productsWithoutSeller = allProducts.map(product => {
+            return {
+                ...product._doc,
+                seller: null
+            };
+        });
+
+        return res.status(200).json({ message: 'Fetched All Products', products: productsWithoutSeller });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'Error in fetching Products' });
+    }
 };
 
 const getAllProductBySeller = async (req, res) => {
+    try {
+        const sellerId = req.query.sellerId;
 
+        // Check if the seller exists
+        const seller = await sellerModel.findOne({ user_id: sellerId }).populate('product_inventory.product');
+
+        if (!seller) {
+            return res.status(400).json({
+                message: 'Seller does not exist'
+            });
+        }
+
+        // Extract product information from the populated field
+        const products = seller.product_inventory.map((item) => item.product);
+
+        console.log(products);
+
+        return res.status(200).json({
+            message: 'Fetched Specific Seller\'s Products',
+            products
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            message: 'Error in fetching Products'
+        });
+    }
 };
+
 
 const getAllProductBySearch = async (req, res) => {
 

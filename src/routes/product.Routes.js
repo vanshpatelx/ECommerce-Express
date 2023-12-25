@@ -8,9 +8,9 @@ const authenticateJWT = require('../middleware/JWTMiddleware');
 router.post('/product', authenticateJWT, uploadImages('files', 5), productCtrl.creatProduct);
 router.patch('/product', authenticateJWT, uploadImages('files', 5), productCtrl.updateProduct);
 router.delete('/product', authenticateJWT, productCtrl.deleteProduct);
-router.get('/product', productCtrl.getProduct);
-router.get('/products', productCtrl.getAllProduct);
-router.get('/products/seller', productCtrl.getAllProductBySeller);
+router.get('/product', authenticateJWT, productCtrl.getProduct);
+router.get('/products', authenticateJWT, productCtrl.getAllProduct);
+router.get('/products/seller', authenticateJWT, productCtrl.getAllProductBySeller);
 router.get('/products/search', productCtrl.getAllProductBySearch);
 
 // Review
