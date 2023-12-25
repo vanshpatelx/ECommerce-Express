@@ -193,9 +193,16 @@ const deleteProduct = async (req, res) => {
             }
         }
 
-        // Proceed to delete the product from the database if all images are deleted successfully
         if (allImagesDeleted) {
-            await productModel.findByIdAndDelete({ _id: existingProduct._id });
+            // Delete the product from the database
+            await productModel.findByIdAndDelete(productId);
+
+            // Remove the product from the seller's inventory
+            await sellerModel.updateOne(
+                { user_id: seller },
+                { $pull: { product_inventory: { product: productId } } }
+            );
+
             return res.status(200).json({ message: 'Product and associated images deleted successfully' });
         } else {
             return res.status(500).json({ message: 'Error deleting images from Cloudinary' });
