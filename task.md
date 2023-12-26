@@ -10,6 +10,7 @@
   - [x] Seller
   - [x] Product
   - [ ] Order
+    - [ ] Payment gateway
   - [ ] Wishlist
   - [X] Reviews
   - [ ] Admin
