@@ -1,9 +1,10 @@
 const router = require('express').Router();
 const orderCtrl = require('../controllers/order.Ctrl');
 
+const authenticateJWT = require('../middleware/JWTMiddleware');
 
-router.post('/checkout', orderCtrl.checkout);
-router.post('/webhook', orderCtrl.webhook);
+router.post('/checkout', authenticateJWT, orderCtrl.checkout);
+router.post('/webhook', authenticateJWT, orderCtrl.webhook);
 
 router.patch('/order/status', orderCtrl.updateOrderStatus);
 

@@ -4,7 +4,7 @@ require('dotenv').config();
 const PORT = process.env.PORT;
 const passportLocal = require('./auth/local.Passport');
 const passportJWT = require('./auth/jwt.Passport'); 
-const connectDB = require('./config/mongoDBConnect'); // Auto-Connected - For more view code files
+require('./config/mongoDBConnect'); // Auto-Connected - For more view code files
 
 
 // Middlewares

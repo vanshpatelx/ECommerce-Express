@@ -25,25 +25,20 @@ const addressSchema = new mongoose.Schema({
 
 
 const productDetails = new mongoose.Schema({
-    seller_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Seller',
-        required: true
-    },
     product: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product'
     },
     Qty: {
         type: Number,
-    },
-    PPU: {
-        type: Number,
-    },
-    total_price: {
-        type: Number,
     }
 })
+
+const payment = new mongoose.Schema({
+    payment_Id : String,
+    payment_method : String,
+    amount_received : Number
+});
 
 const orderSchema = new mongoose.Schema({
     customer_id: {
@@ -55,12 +50,11 @@ const orderSchema = new mongoose.Schema({
         type: [productDetails],
         required: true
     },
-    amout: {
-        type: Number,
-        required: true
-    },
     payment: {
-        type: String,
+        type : payment
+    },
+    totalBill: {
+        type: Number,
         required: true
     },
     status: {
