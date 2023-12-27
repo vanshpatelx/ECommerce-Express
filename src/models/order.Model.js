@@ -1,7 +1,35 @@
 const mongoose = require('mongoose');
 
+const addressSchema = new mongoose.Schema({
+    street_name :{
+        type : String,
+    },
+    area : {
+        type: String
+    },
+    details : {
+        city : {
+            type : String,
+        },
+        zip : {
+            type : Number,
+        },
+        state : {
+            type : String,
+        },
+        country : {
+            type : String,
+        }
+    }
+})
+
 
 const productDetails = new mongoose.Schema({
+    seller_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Seller',
+        required: true
+    },
     product: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product'
@@ -18,11 +46,6 @@ const productDetails = new mongoose.Schema({
 })
 
 const orderSchema = new mongoose.Schema({
-    seller_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Seller',
-        required: true
-    },
     customer_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Customer',
@@ -45,6 +68,7 @@ const orderSchema = new mongoose.Schema({
         enum: ["Placed Order", "Dispatched", "On the way", "Delivered"],
         required: true
     },
+    shippingAddress : addressSchema
 }, { timestamps: true });
 
 module.exports = mongoose.model('Order', orderSchema);

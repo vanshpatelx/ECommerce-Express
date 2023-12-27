@@ -2,8 +2,8 @@ const router = require('express').Router();
 const orderCtrl = require('../controllers/order.Ctrl');
 
 
-router.post('/order', orderCtrl.createOrder);
-router.patch('/order', orderCtrl.updateOrder);
+router.post('/checkout', orderCtrl.checkout);
+router.post('/webhook', orderCtrl.webhook);
 
 router.patch('/order/status', orderCtrl.updateOrderStatus);
 
