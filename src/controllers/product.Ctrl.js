@@ -5,24 +5,13 @@ const customerModel = require("../models/customer.Model");
 
 const creatProduct = async (req, res) => {
     try {
-        const seller = req.user.sub;
-
         const { name, real_price, qty, discounted_rate } = req.body;
 
         const imageUrls = await getImageUrls(req.files);
 
-        if (!name || !real_price || !qty || !discounted_rate || !seller || !imageUrls) {
+        if (!name || !real_price || !qty || !discounted_rate || !imageUrls) {
             return res.status(400).json({
                 message: 'Fill all fields in Product Creat'
-            });
-        }
-
-        // Is already registered? Check in DB
-        const sellerData = await sellerModel.findOne({ user_id: seller });
-
-        if (!sellerData) {
-            return res.status(400).json({
-                message: 'Seller is Not Exists'
             });
         }
 
@@ -32,7 +21,7 @@ const creatProduct = async (req, res) => {
             real_price: real_price,
             qty: qty,
             discounted_rate: discounted_rate,
-            seller: seller,
+            seller: req.user.sub,
             reviews: []
         });
 
@@ -40,7 +29,7 @@ const creatProduct = async (req, res) => {
 
         // Storing product information in seller DB
         await sellerModel.findOneAndUpdate(
-            { user_id: seller },
+            { user_id: req.user.sub },
             { $push: { product_inventory: { product: product._id } } },
             { new: true } // option returns the modified document
         );
@@ -56,7 +45,6 @@ const creatProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
     try {
         const productId = req.query.productId;
-        const seller = req.user.sub;
 
         const { name, real_price, qty, discounted_rate, deleteImages } = req.body;
 
@@ -68,7 +56,7 @@ const updateProduct = async (req, res) => {
         }
 
         // Check if no fields are provided for update
-        if (!name && !real_price && !qty && !discounted_rate && !seller && !imageUrls && !deleteImages) {
+        if (!name && !real_price && !qty && !discounted_rate && !imageUrls && !deleteImages) {
             return res.status(400).json({
                 message: 'No fields provided for Product Update'
             });
@@ -83,7 +71,7 @@ const updateProduct = async (req, res) => {
         }
 
         // Check if the seller is the owner of the product
-        if (existingProduct.seller.toString() !== seller) {
+        if (existingProduct.seller.toString() !== req.user.sub) {
             return res.status(403).json({
                 message: 'Unauthorized access to update product'
             });
@@ -163,7 +151,6 @@ const updateProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
     try {
         const productId = req.query.productId;
-        const seller = req.user.sub;
 
         // Check if the product exists
         const existingProduct = await productModel.findById({ _id: productId });
@@ -174,7 +161,7 @@ const deleteProduct = async (req, res) => {
         }
 
         // Check if the seller is the owner of the product
-        if (existingProduct.seller.toString() !== seller) {
+        if (existingProduct.seller.toString() !== req.user.sub) {
             return res.status(403).json({
                 message: 'Unauthorized access to update product'
             });
@@ -186,7 +173,6 @@ const deleteProduct = async (req, res) => {
 
         for (const imageUrl of existingProduct.image_urls) {
             const deleteResult = await deleteImage(imageUrl);
-            console.log(deleteResult);
 
             if (!deleteResult.success) {
                 allImagesDeleted = false;  // Set to false if any image deletion fails
@@ -200,7 +186,7 @@ const deleteProduct = async (req, res) => {
 
             // Remove the product from the seller's inventory
             await sellerModel.updateOne(
-                { user_id: seller },
+                { user_id: req.user.sub },
                 { $pull: { product_inventory: { product: productId } } }
             );
 
@@ -227,7 +213,6 @@ const getProduct = async (req, res) => {
             });
         }
 
-        console.log(existingProduct);
         // Hide Details
         existingProduct.seller = null;
 
@@ -281,7 +266,6 @@ const getAllProductBySeller = async (req, res) => {
         // Extract product information from the populated field
         const products = seller.product_inventory.map((item) => item.product);
 
-        console.log(products);
 
         return res.status(200).json({
             message: 'Fetched Specific Seller\'s Products',
@@ -296,9 +280,9 @@ const getAllProductBySeller = async (req, res) => {
 };
 
 
-const getAllProductBySearch = async (req, res) => {
+// const getAllProductBySearch = async (req, res) => {
 
-};
+// };
 
 const getAllReviewOfProduct = async (req, res) => {
     try {
@@ -338,25 +322,14 @@ const getAllReviewOfProduct = async (req, res) => {
 const createReview = async (req, res) => {
     try {
         // Get Information from Body
-        const customer = req.user.sub;
         const product = req.query.productId
         const { msg, star } = req.body;
 
-        if (!customer || !product || !msg || !star) {
+        if (!product || !msg || !star) {
             return res.status(400).json({
                 message: 'Fill all fields in Review Add'
             });
         }
-
-        // Is user already registered? Check in DB
-        const customerData = await customerModel.findOne({ user_id: customer });
-
-        if (!customerData) {
-            return res.status(400).json({
-                message: 'Customer is Not Exists'
-            });
-        }
-
 
         // Check if the product exists
         const existingProduct = await productModel.findById({ _id: product });
@@ -368,7 +341,7 @@ const createReview = async (req, res) => {
 
         // Add review
         const newReview = {
-            customer: customer,
+            customer: req.user.sub,
             msg: msg,
             star: Number(star)
         }
@@ -389,12 +362,11 @@ const createReview = async (req, res) => {
 const updateReview = async (req, res) => {
     try {
         // Get Information from Body
-        const customer = req.user.sub;
         const product = req.query.productId;
         const reviewId = req.query.reviewId;
         const { msg, star } = req.body;
 
-        if (!customer || !product || !reviewId || !msg || !star) {
+        if (!product || !reviewId || !msg || !star) {
             return res.status(400).json({
                 message: 'Fill all fields in Review Update'
             });
@@ -413,7 +385,6 @@ const updateReview = async (req, res) => {
             (review) => review._id.toString() === reviewId
         );
 
-        console.log(reviewToUpdate);
         // Check if the review exists
         if (!reviewToUpdate) {
             return res.status(404).json({
@@ -422,7 +393,7 @@ const updateReview = async (req, res) => {
         }
 
         // Check if the review belongs to the current customer
-        if (reviewToUpdate.customer.toString() !== customer) {
+        if (reviewToUpdate.customer.toString() !== req.user.sub) {
             return res.status(403).json({
                 message: 'You are not authorized to update this review'
             });
@@ -446,11 +417,10 @@ const updateReview = async (req, res) => {
 const deleteReview = async (req, res) => {
     try {
         // Get Information from Body
-        const customer = req.user.sub;
         const product = req.query.productId;
         const reviewId = req.query.reviewId;
 
-        if (!customer || !product || !reviewId) {
+        if (!product || !reviewId) {
             return res.status(400).json({
                 message: 'Fill all fields in Review Delete'
             });
@@ -463,7 +433,7 @@ const deleteReview = async (req, res) => {
                 $pull: {
                     reviews: {
                         _id: reviewId,
-                        customer: customer
+                        customer: req.user.sub
                     }
                 }
             },
@@ -487,19 +457,8 @@ const deleteReview = async (req, res) => {
 
 const getAllReviewForSeller = async (req, res) => {
     try {
-        const sellerId = req.user.sub;
-
-        // Check if the seller exists
-        const seller = await sellerModel.findOne({ user_id: sellerId }).populate('product_inventory.product');
-
-        if (!seller) {
-            return res.status(400).json({
-                message: 'Seller does not exist'
-            });
-        }
-
         // Extract product information from the populated field
-        const products = seller.product_inventory.map((item) => item.product);
+        const products = req.sellerData.product_inventory.map((item) => item.product);
 
         // Collect all reviews for the seller'
         const allReviews = [];
@@ -528,7 +487,7 @@ module.exports = {
     deleteProduct,
     getAllProduct,
     getProduct,
-    getAllProductBySearch,
+    // getAllProductBySearch,
     getAllProductBySeller,
     getAllReviewOfProduct,
     createReview,

@@ -52,16 +52,16 @@ const addCustomer = async (req, res) => {
 };
 
 
-const updateCustomer = async (req,res) => {
+const updateCustomer = async (req, res) => {
     try {
         const user_id = req.user.sub;
         const { user_address, contant_info } = req.body;
 
         await customerModel.findOneAndUpdate({
-            user_id : user_id
+            user_id: user_id
         }, {
-            user_address : user_address,
-            contant_info : contant_info
+            user_address: user_address,
+            contant_info: contant_info
         })
 
         return res.status(200).json({ message: 'Customer updated successfully' });
@@ -69,17 +69,71 @@ const updateCustomer = async (req,res) => {
         return res.status(500).json({ message: 'Error in Updating Customer' });
     }
 };
-const getWishlist = async (req,res) => {
+const getWishlist = async (req, res) => {
+    try {
+        const wishlistProducts = req.customerData.wishlist;
 
+        if (wishlistProducts.length === 0) {
+            return res.status(200).json({ message: 'Nothing in wishlist' });
+        }
+
+        return res.status(200).json({ message: 'wishlist products', wishlistProducts });
+
+    } catch (err) {
+        return res.status(500).json({ message: 'Error in getting wishlist products' });
+    }
 };
-const addWishlist = async (req,res) => {
+const addWishlist = async (req, res) => {
+    try {
+        const { productId } = req.body;
 
+        if (!productId) {
+            return res.status(404).json({
+                message: 'Fill all fields'
+            });
+        }
+
+        const product = await productModel.findById(productId)
+
+        if (!product) {
+            return res.status(404).json({
+                message: 'Product not found'
+            });
+        }
+
+        req.customerData.product.push(productId);
+
+        await req.customerData.save();
+
+        return res.status(200).json({ message: 'wishlist product added' });
+
+    } catch (err) {
+        return res.status(500).json({ message: 'Error in getting wishlist products' });
+    }
 };
-const updateWishlist = async (req,res) => {
+const deleteWishlist = async (req, res) => {
+    try {
+        const { productId } = req.body;
 
-};
-const deleteWishlist = async (req,res) => {
+        if (!productId) {
+            return res.status(404).json({
+                message: 'Fill all fields'
+            });
+        }
 
+        // Remove the productId from the wishlist
+        req.customerData.product.pull(productId);
+
+
+        // Save the changes back to the database
+        await req.customerData.save();
+
+        return res.status(200).json({ message: 'Wishlist product removed' });
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'Error in removing wishlist product' });
+    }
 };
 
 module.exports = {
@@ -87,6 +141,5 @@ module.exports = {
     updateCustomer,
     getWishlist,
     addWishlist,
-    updateWishlist,
     deleteWishlist
 }

@@ -2,11 +2,26 @@ const sellerModel = require("../models/seller.Model");
 const userModel = require("../models/user.Model");
 
 
-const getInventory = async (req,res) => {
+const getInventory = async (req, res) => {
+    try {
+        // Retrieve product details based on req.sellerData.product_inventory
+        const productIds = req.sellerData.product_inventory; // Assuming product_inventory contains an array of product IDs
 
+        // Use the productIds to fetch details from the productModel
+        const products = await productModel.find({ _id: { $in: productIds } });
+
+        // Now, 'products' contains details of each product in the seller's inventory
+        return res.status(200).json({
+            message: 'Seller inventory retrieved successfully',
+            inventory: products
+        });
+
+    } catch (err) {
+        return res.status(500).json({ message: 'Error in Getting Seller Inventory' });
+    }
 };
 
-const addSeller = async (req,res) => {
+const addSeller = async (req, res) => {
     try {
         const user_id = req.user.sub;
         const { seller_address, contact_info } = req.body;
@@ -55,16 +70,16 @@ const addSeller = async (req,res) => {
     }
 };
 
-const updateSeller = async (req,res) => {
+const updateSeller = async (req, res) => {
     try {
         const user_id = req.user.sub;
         const { seller_address, contact_info } = req.body;
 
         await sellerModel.findOneAndUpdate({
-            user_id : user_id
+            user_id: user_id
         }, {
-            seller_address : seller_address,
-            contact_info : contact_info
+            seller_address: seller_address,
+            contact_info: contact_info
         })
 
         return res.status(200).json({ message: 'Seller updated successfully' });

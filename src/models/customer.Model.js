@@ -1,87 +1,87 @@
 const mongoose = require('mongoose');
 
 const addressSchema = new mongoose.Schema({
-    street_name :{
-        type : String,
+    street_name: {
+        type: String,
     },
-    area : {
+    area: {
         type: String
     },
-    details : {
-        city : {
-            type : String,
+    details: {
+        city: {
+            type: String,
         },
-        zip : {
-            type : Number,
+        zip: {
+            type: Number,
         },
-        state : {
-            type : String,
+        state: {
+            type: String,
         },
-        country : {
-            type : String,
+        country: {
+            type: String,
         }
     }
 })
 
 const contactSchema = new mongoose.Schema({
-    num : {
-        contry_code : {
-            type : String,
+    num: {
+        contry_code: {
+            type: String,
         },
-        number : {
-            type : String,
+        number: {
+            type: String,
         }
     },
-    extra_num : {
-        contry_code : {
-            type : String,
+    extra_num: {
+        contry_code: {
+            type: String,
         },
-        number : {
-            type : String,
+        number: {
+            type: String,
         }
     },
-    extra_email : {
-        type : String
+    extra_email: {
+        type: String
     }
 });
 
 const wishlist = new mongoose.Schema({
-    product : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : 'Product',
+    products: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
     }
 });
 
 const order = new mongoose.Schema({
-    product : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : 'Product',
+    orders: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Order',
     }
 });
 
 
 const customerSchema = new mongoose.Schema({
-    user_id : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : 'User',
+    user_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
         required: true
     },
-    user_address : {
-        type : addressSchema,
-        required : true
-    },
-    contant_info : {
-        type : contactSchema,
+    user_address: {
+        type: addressSchema,
         required: true
     },
-    wishlist : {
-        type : [wishlist]
+    contant_info: {
+        type: contactSchema,
+        required: true
     },
-    order_info :{
-        type : [order]    
+    wishlist: {
+        type: [wishlist]
+    },
+    order_info: {
+        type: [order]
     }
 
-},  {timestamps: true});
+}, { timestamps: true });
 
 module.exports = mongoose.model('Customer', customerSchema);
 

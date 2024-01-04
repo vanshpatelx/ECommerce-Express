@@ -2,17 +2,11 @@ const customerModel = require("../models/customer.Model");
 const productModel = require("../models/product.model");
 const { createCharge, handleWebhookEvent } = require("../config/StripePayment");
 const orderModel = require("../models/order.Model");
+const sellerModel = require("../models/seller.Model");
 
 
 const checkout = async (req, res) => {
     try {
-        const customer = req.user.sub;
-        const customerData = await customerModel.findOne({ user_id: customer });
-
-        if (!customerData) {
-            return res.status(400).json({ message: 'Customer does not exist' });
-        }
-
         const { products, shippingAddress, paymentMethod } = req.body;
 
         if (!products || !paymentMethod || products.length === 0) {
@@ -20,7 +14,7 @@ const checkout = async (req, res) => {
         }
 
         if (!shippingAddress) {
-            shippingAddress = customerData.user_address;
+            shippingAddress = req.customerData.user_address;
         }
 
         let storeProductId = [];
@@ -52,7 +46,7 @@ const checkout = async (req, res) => {
                 products,
                 shippingAddress,
                 paymentDetails: charge,
-                customer,
+                customer: req.customerData._id,
                 total
             };
 
@@ -75,6 +69,7 @@ const webhook = (req, res) => {
 
 
 const createOrder = async (orderDetails) => {
+    let order_id;
     try {
         const { products, shippingAddress, paymentDetails, customer, total } = orderDetails;
 
@@ -101,7 +96,7 @@ const createOrder = async (orderDetails) => {
         console.log(newOrder);
 
         if (paymentDetails.paid == true && paymentDetails.refunded == false) {
-            await newOrder.save();
+            order_id = await newOrder.save();
 
             // Decreasing products after payment done
             for (let product of products) {
@@ -116,6 +111,7 @@ const createOrder = async (orderDetails) => {
         }
 
         const orderRes = {
+            order_id,
             payment: {
                 id: paymentDetails.id,
                 amount: paymentDetails.amount_captured,
@@ -130,27 +126,100 @@ const createOrder = async (orderDetails) => {
     }
 };
 
-const updateOrder = async (req, res) => {
-
-};
-
 const updateOrderStatus = async (req, res) => {
+    try {
+        const { orderId, status } = req.body;
 
+        if (!orderId) {
+            return res.status(400).json({
+                message: 'Provide Order ID'
+            });
+        }
+        const orderIndex = req.sellerData.order_info.findIndex(order => order.orders.equals(orderId));
+
+        if (orderIndex === -1) {
+            return res.status(400).json({ message: 'Order does not exist in the seller\'s order_info' });
+        }
+
+        await orderModel.findOneAndUpdate({ _id: orderId }, { status: status });
+        res.status(200).json({ message: 'Order Updated successfully', orderId });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error in Update Order Status' });
+    }
 };
+
 
 const getAllOrdersCustomer = async (req, res) => {
-
+    try {
+        const responceData = req.customerData.order_info;
+        res.status(200).json({ message: 'Order data getting successfully', responceData });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error in Get All Orders' });
+    }
 };
 
 const getOrderCustomer = async (req, res) => {
+    try {
+        const { orderId } = req.body;
 
+        // Check if orderId exists in the customerData.order_info array
+        const orderExists = req.customerData.order_info.some(order => order.equals(orderId));
+
+        if (!orderExists) {
+            return res.status(404).json({ message: 'Order not found for the customer' });
+        }
+
+        // If orderId exists, search in the order model
+        const orderData = await orderModel.findById(orderId);
+
+        if (!orderData) {
+            return res.status(404).json({ message: 'Order not found in the order model' });
+        }
+
+        res.status(200).json({ message: 'Order data successfully', responseData: orderData });
+
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error in getting Order detail' });
+    }
 };
 
 const getAllOrdersSeller = async (req, res) => {
-
+    try {
+        const responceData = req.sellerData.order_info;
+        res.status(200).json({ message: 'Order data getting successfully', responceData });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error in Get All Orders' });
+    }
 };
 
 const getOrderSeller = async (req, res) => {
+    try {
+        const { orderId } = req.body;
+        
+        // Check if orderId exists in the customerData.order_info array
+        const orderExists = req.sellerData.order_info.some(order => order.equals(orderId));
+
+        if (!orderExists) {
+            return res.status(404).json({ message: 'Order not found for the seller' });
+        }
+
+        // If orderId exists, search in the order model
+        const orderData = await orderModel.findById(orderId);
+
+        if (!orderData) {
+            return res.status(404).json({ message: 'Order not found in the order model' });
+        }
+
+        res.status(200).json({ message: 'Order data successfully', responseData: orderData });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error in Get All Orders' });
+    }
 
 };
 
@@ -158,7 +227,6 @@ module.exports = {
     webhook,
     checkout,
     createOrder,
-    updateOrder,
     updateOrderStatus,
     getAllOrdersCustomer,
     getOrderCustomer,

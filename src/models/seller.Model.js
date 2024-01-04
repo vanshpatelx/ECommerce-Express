@@ -47,7 +47,7 @@ const contactSchema = new mongoose.Schema({
 
 
 const inventorySchema = new mongoose.Schema({
-    product : {
+    products : {
         type : mongoose.Schema.Types.ObjectId,
         ref: 'Product',
     }
@@ -55,9 +55,9 @@ const inventorySchema = new mongoose.Schema({
 
 
 const order = new mongoose.Schema({
-    product : {
+    orders : {
         type : mongoose.Schema.Types.ObjectId,
-        ref : 'Product',
+        ref : 'Order',
     }
 });
 
