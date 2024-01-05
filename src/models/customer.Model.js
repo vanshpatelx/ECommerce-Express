@@ -70,7 +70,7 @@ const customerSchema = new mongoose.Schema({
         type: addressSchema,
         required: true
     },
-    contant_info: {
+    contact_info: {
         type: contactSchema,
         required: true
     },

@@ -1,6 +1,5 @@
 const passportLocal = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-// const CryptoJS = require("crypto-js");
 const hashingstr = require('hashingstr');
 const HashAlgo = process.env.HashAlgo;
 

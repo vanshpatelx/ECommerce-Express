@@ -4,9 +4,9 @@ const userModel = require("../models/user.Model");
 const addCustomer = async (req, res) => {
     try {
         const user_id = req.user.sub;
-        const { user_address, contant_info } = req.body;
+        const { user_address, contact_info } = req.body;
 
-        if (!user_address || !contant_info) {
+        if (!user_address && !contact_info) {
             return res.status(400).json({
                 message: 'Fill all fields in Customer registration'
             });
@@ -24,7 +24,7 @@ const addCustomer = async (req, res) => {
         const Customer = new customerModel({
             user_id: user_id,
             user_address: user_address,
-            contant_info: contant_info,
+            contact_info: contact_info,
             wishlist: [],
             order_info: []
         });
@@ -54,15 +54,29 @@ const addCustomer = async (req, res) => {
 
 const updateCustomer = async (req, res) => {
     try {
-        const user_id = req.user.sub;
-        const { user_address, contant_info } = req.body;
+        const { user_address, contact_info } = req.body;
 
-        await customerModel.findOneAndUpdate({
-            user_id: user_id
-        }, {
-            user_address: user_address,
-            contant_info: contant_info
-        })
+        if (!user_address || !contact_info) {
+            return res.status(400).json({
+                message: 'Fill all fields in Customer registration'
+            });
+        }
+
+        if(user_address){
+            req.customerData.user_address = user_address;
+        }
+        if(contact_info){
+            req.customerData.contact_info = contact_info;
+        }
+        
+        await req.customerData.save();
+
+        // await customerModel.findOneAndUpdate({
+        //     user_id: user_id
+        // }, {
+        //     user_address: user_address,
+        //     contact_info: contact_info
+        // })
 
         return res.status(200).json({ message: 'Customer updated successfully' });
     } catch (err) {

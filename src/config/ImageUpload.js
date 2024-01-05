@@ -4,9 +4,9 @@ const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 // Configure Cloudinary
 cloudinary.config({
-  cloud_name: 'dhtzoyxe0',
-  api_key: '284423347846422',
-  api_secret: 'WGcl1aWN-nh0XA6axT9dBXFzVzQ',
+  cloud_name: process.env.CloudName,
+  api_key: process.env.APIKey,
+  api_secret: process.env.APISecret,
 });
 
 // Set up multer for handling file uploads with streaming

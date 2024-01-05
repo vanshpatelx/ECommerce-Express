@@ -146,8 +146,6 @@ const updateProduct = async (req, res) => {
 };
 
 
-
-
 const deleteProduct = async (req, res) => {
     try {
         const productId = req.query.productId;

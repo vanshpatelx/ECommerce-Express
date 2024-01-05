@@ -6,9 +6,9 @@ const HashAlgo = process.env.HashAlgo;
 
 const registerUser = async (req, res) => {
     try {
-        const { email, password, type, seller_id, customer_id } = req.body;
+        const { email, password, type } = req.body;
 
-        if (!email || !password || !type) {
+        if (!email && !password && !type) {
             return res.status(400).json({
                 message: 'Fill all fields'
             });
@@ -23,7 +23,6 @@ const registerUser = async (req, res) => {
         }
 
         // Encrypt password
-        // const hashedPassword = await CryptoJS.AES.encrypt(password, CryptoSECRET).toString();
         const hashedPassword = await hashingstr.hash(HashAlgo, password);
 
         const newUser = new userModel({
@@ -46,6 +45,10 @@ const registerUser = async (req, res) => {
 };
 
 const loginUser = (req, res) => {
+    if (!req.body.email && !req.body.password) {
+        return res.status(400).json({ message: 'Fill all fields' });
+    }
+
     passportLocal.authenticate('local', { session: false }, async (err, user) => {
       if (err) {
         return res.status(500).json({ message: 'Error during authentication', error: err.message });
@@ -56,7 +59,7 @@ const loginUser = (req, res) => {
   
       // Generating Token
       const token = await generateToken(user);
-      res.json({ message: 'User logged in successfully', token });
+      return res.status(200).json({ message: 'User logged in successfully', token });
     })(req, res);
   };
   

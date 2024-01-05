@@ -5,7 +5,7 @@ const {checkCustomerRegistration} = require('../middleware/checkRegistration');
 
 
 router.post('/customer', authenticateJWT, customerCtrl.addCustomer);
-router.patch('/customer',authenticateJWT, customerCtrl.updateCustomer);
+router.patch('/customer',authenticateJWT, checkCustomerRegistration, customerCtrl.updateCustomer);
 
 // wishlist
 router.get('/customer/wishlist', authenticateJWT , checkCustomerRegistration, customerCtrl.getWishlist);

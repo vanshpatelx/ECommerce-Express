@@ -1,4 +1,4 @@
-const stripe = require('stripe')('sk_test_51OS2inJrvKl2JmmqXNTYOqQHLNAawVpCCge0dRnU2PthuQArmoMFTQ0UGYBnnoP4k23ayLY8rxdPAOJSGJowez2900TdAwotef');
+const stripe = require('stripe')(process.env.StripeAPIKey);
 
 function customRound(number, condition) {
     return condition ? Math.ceil(number) : Math.floor(number);

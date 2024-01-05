@@ -26,7 +26,7 @@ const addSeller = async (req, res) => {
         const user_id = req.user.sub;
         const { seller_address, contact_info } = req.body;
 
-        if (!seller_address || !contact_info) {
+        if (!seller_address && !contact_info) {
             return res.status(400).json({
                 message: 'Fill all fields in Seller registration'
             });
@@ -72,15 +72,28 @@ const addSeller = async (req, res) => {
 
 const updateSeller = async (req, res) => {
     try {
-        const user_id = req.user.sub;
         const { seller_address, contact_info } = req.body;
 
-        await sellerModel.findOneAndUpdate({
-            user_id: user_id
-        }, {
-            seller_address: seller_address,
-            contact_info: contact_info
-        })
+        if (!seller_address || !contact_info) {
+            return res.status(400).json({
+                message: 'Fill all fields in Seller registration'
+            });
+        }
+
+        if(seller_address){
+            req.sellerData.seller_address = seller_address;
+        }
+        if(contact_info){
+            req.sellerData.contact_info = contact_info;
+        }
+        
+        await req.sellerData.save();
+        // await sellerModel.findOneAndUpdate({
+        //     user_id: user_id
+        // }, {
+        //     seller_address: seller_address,
+        //     contact_info: contact_info
+        // })
 
         return res.status(200).json({ message: 'Seller updated successfully' });
     } catch (err) {
