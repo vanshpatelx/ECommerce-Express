@@ -1,49 +1,49 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const reviews = new mongoose.Schema({
     customer: {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : 'Customer'
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Customer'
     },
     msg: {
-        type : String   
+        type: String   
     },
     star: {
-        type : Number,
+        type: Number,
         max: 5
     }
 });
 
 const productSchema = new mongoose.Schema({
     image_urls: {
-        type : [String],
+        type: [String],
         required: true
     },
     name: {
-        type : String,
-        required : true
+        type: String,
+        required: true
     },
     real_price: {
-        type : Number,
-        required : true
+        type: Number,
+        required: true
     },
     qty: {
-        type : Number,
+        type: Number,
         required: true
     },
     discounted_rate: {
-        type : Number,
-        required : true
+        type: Number,
+        required: true
     },
     seller: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Seller',
         required: true
     },
-    reviews:{
-        type : [reviews]
+    reviews: {
+        type: [reviews]
     }
 
-}, {timestamps: true});
+}, { timestamps: true });
 
-module.exports = mongoose.model('Product', productSchema);
+export default mongoose.model('Product', productSchema);

@@ -1,28 +1,27 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const addressSchema = new mongoose.Schema({
-    street_name :{
-        type : String,
+    street_name: {
+        type: String,
     },
-    area : {
+    area: {
         type: String
     },
-    details : {
-        city : {
-            type : String,
+    details: {
+        city: {
+            type: String,
         },
-        zip : {
-            type : Number,
+        zip: {
+            type: Number,
         },
-        state : {
-            type : String,
+        state: {
+            type: String,
         },
-        country : {
-            type : String,
+        country: {
+            type: String,
         }
     }
-})
-
+});
 
 const productDetails = new mongoose.Schema({
     product: {
@@ -32,12 +31,12 @@ const productDetails = new mongoose.Schema({
     Qty: {
         type: Number,
     }
-})
+});
 
 const payment = new mongoose.Schema({
-    payment_Id : String,
-    payment_method : String,
-    amount_received : Number
+    payment_Id: String,
+    payment_method: String,
+    amount_received: Number
 });
 
 const orderSchema = new mongoose.Schema({
@@ -51,7 +50,7 @@ const orderSchema = new mongoose.Schema({
         required: true
     },
     payment: {
-        type : payment
+        type: payment
     },
     totalBill: {
         type: Number,
@@ -62,9 +61,7 @@ const orderSchema = new mongoose.Schema({
         enum: ["Placed Order", "Dispatched", "On the way", "Delivered"],
         required: true
     },
-    shippingAddress : addressSchema
+    shippingAddress: addressSchema
 }, { timestamps: true });
 
-module.exports = mongoose.model('Order', orderSchema);
-
-
+export default mongoose.model('Order', orderSchema);

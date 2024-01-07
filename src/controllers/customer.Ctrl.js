@@ -1,5 +1,6 @@
-const customerModel = require("../models/customer.Model");
-const userModel = require("../models/user.Model");
+import customerModel from '../models/customer.Model.js';
+import userModel from '../models/user.Model.js';
+import productModel from '../models/product.model.js';
 
 const addCustomer = async (req, res) => {
     try {
@@ -20,7 +21,6 @@ const addCustomer = async (req, res) => {
             });
         }
 
-
         const Customer = new customerModel({
             user_id: user_id,
             user_address: user_address,
@@ -29,9 +29,7 @@ const addCustomer = async (req, res) => {
             order_info: []
         });
 
-
         const newCustomer = await Customer.save();
-
 
         // Update the user document with the customer_id
         const userToUpdate = await userModel.findOne({ _id: user_id, type: 'Customer' });
@@ -44,13 +42,11 @@ const addCustomer = async (req, res) => {
             return res.status(500).json({ message: 'Error in Registering Customer || User type is not customer' });
         }
 
-
         return res.status(200).json({ message: 'Customer registered successfully' });
     } catch (err) {
         return res.status(500).json({ message: 'Error in Registering Customer' });
     }
 };
-
 
 const updateCustomer = async (req, res) => {
     try {
@@ -62,27 +58,21 @@ const updateCustomer = async (req, res) => {
             });
         }
 
-        if(user_address){
+        if (user_address) {
             req.customerData.user_address = user_address;
         }
-        if(contact_info){
+        if (contact_info) {
             req.customerData.contact_info = contact_info;
         }
-        
-        await req.customerData.save();
 
-        // await customerModel.findOneAndUpdate({
-        //     user_id: user_id
-        // }, {
-        //     user_address: user_address,
-        //     contact_info: contact_info
-        // })
+        await req.customerData.save();
 
         return res.status(200).json({ message: 'Customer updated successfully' });
     } catch (err) {
         return res.status(500).json({ message: 'Error in Updating Customer' });
     }
 };
+
 const getWishlist = async (req, res) => {
     try {
         const wishlistProducts = req.customerData.wishlist;
@@ -97,6 +87,7 @@ const getWishlist = async (req, res) => {
         return res.status(500).json({ message: 'Error in getting wishlist products' });
     }
 };
+
 const addWishlist = async (req, res) => {
     try {
         const { productId } = req.body;
@@ -107,7 +98,7 @@ const addWishlist = async (req, res) => {
             });
         }
 
-        const product = await productModel.findById(productId)
+        const product = await productModel.findById(productId);
 
         if (!product) {
             return res.status(404).json({
@@ -115,7 +106,7 @@ const addWishlist = async (req, res) => {
             });
         }
 
-        req.customerData.product.push(productId);
+        req.customerData.wishlist.push(productId);
 
         await req.customerData.save();
 
@@ -125,6 +116,7 @@ const addWishlist = async (req, res) => {
         return res.status(500).json({ message: 'Error in getting wishlist products' });
     }
 };
+
 const deleteWishlist = async (req, res) => {
     try {
         const { productId } = req.body;
@@ -136,8 +128,7 @@ const deleteWishlist = async (req, res) => {
         }
 
         // Remove the productId from the wishlist
-        req.customerData.product.pull(productId);
-
+        req.customerData.wishlist.pull(productId);
 
         // Save the changes back to the database
         await req.customerData.save();
@@ -150,10 +141,10 @@ const deleteWishlist = async (req, res) => {
     }
 };
 
-module.exports = {
+export {
     addCustomer,
     updateCustomer,
     getWishlist,
     addWishlist,
     deleteWishlist
-}
+};

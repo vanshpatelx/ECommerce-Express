@@ -1,5 +1,5 @@
-const sellerModel = require("../models/seller.Model");
-const customerModel = require("../models/customer.Model");
+import sellerModel from "../models/seller.Model.js";
+import customerModel from "../models/customer.Model.js";
 
 const sellerCache = new Map();
 const customerCache = new Map();
@@ -68,8 +68,7 @@ const checkCustomerRegistration = async (req, res, next) => {
     }
 };
 
-
-module.exports = {
+export {
     checkCustomerRegistration,
     checkSellerRegistration
-}
+};

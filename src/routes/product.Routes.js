@@ -1,25 +1,36 @@
-const router = require('express').Router();
+import express from 'express';
+const router = express.Router();
 
-const productCtrl = require('../controllers/product.Ctrl');
-const { uploadImages } = require('../config/ImageUpload');
-const authenticateJWT = require('../middleware/JWTMiddleware');
-const {checkCustomerRegistration, checkSellerRegistration} = require('../middleware/checkRegistration');
+import {
+    creatProduct,
+    updateProduct,
+    deleteProduct,
+    getAllProduct,
+    getProduct,
+    getAllProductBySeller,
+    getAllReviewOfProduct,
+    createReview,
+    updateReview,
+    deleteReview,
+    getAllReviewForSeller
+} from '../controllers/product.Ctrl.js';
+import { uploadImages } from '../config/ImageUpload.js';
+import authenticateJWT from '../middleware/JWTMiddleware.js';
+import { checkCustomerRegistration, checkSellerRegistration } from '../middleware/checkRegistration.js';
 
-
-router.post('/product', authenticateJWT, checkSellerRegistration, uploadImages('files', 5), productCtrl.creatProduct);
-router.patch('/product', authenticateJWT, checkSellerRegistration, uploadImages('files', 5), productCtrl.updateProduct);
-router.delete('/product', authenticateJWT, checkSellerRegistration, productCtrl.deleteProduct);
-router.get('/product', authenticateJWT, productCtrl.getProduct);
-router.get('/products', authenticateJWT, productCtrl.getAllProduct);
-router.get('/products/seller', authenticateJWT, productCtrl.getAllProductBySeller);
+router.post('/product', authenticateJWT, checkSellerRegistration, uploadImages('files', 5), creatProduct);
+router.patch('/product', authenticateJWT, checkSellerRegistration, uploadImages('files', 5), updateProduct);
+router.delete('/product', authenticateJWT, checkSellerRegistration, deleteProduct);
+router.get('/product', authenticateJWT, getProduct);
+router.get('/products', authenticateJWT, getAllProduct);
+router.get('/products/seller', authenticateJWT, getAllProductBySeller);
 // router.get('/products/search', productCtrl.getAllProductBySearch);
 
 // Review
-router.get('/product/review', authenticateJWT, productCtrl.getAllReviewOfProduct);
-router.post('/product/review', authenticateJWT, checkCustomerRegistration, productCtrl.createReview);
-router.patch('/product/review', authenticateJWT, checkCustomerRegistration, productCtrl.updateReview);
-router.delete('/product/review', authenticateJWT, checkCustomerRegistration, productCtrl.deleteReview);
-router.get('/product/review/seller', authenticateJWT,checkSellerRegistration ,productCtrl.getAllReviewForSeller);
+router.get('/product/review', authenticateJWT, getAllReviewOfProduct);
+router.post('/product/review', authenticateJWT, checkCustomerRegistration, createReview);
+router.patch('/product/review', authenticateJWT, checkCustomerRegistration, updateReview);
+router.delete('/product/review', authenticateJWT, checkCustomerRegistration, deleteReview);
+router.get('/product/review/seller', authenticateJWT, checkSellerRegistration, getAllReviewForSeller);
 
-
-module.exports = router;
+export default router;

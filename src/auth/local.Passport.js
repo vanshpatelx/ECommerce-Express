@@ -1,12 +1,14 @@
-const passportLocal = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
-const hashingstr = require('hashingstr');
+import passport from 'passport';
+import { Strategy as LocalStrategy } from 'passport-local';
+import hashingstr, { hash } from 'hashingstr';
+import User from '../models/user.Model.js';
+
 const HashAlgo = process.env.HashAlgo;
+/**
+ * Local Passport configuration.
+ */
 
-
-const User = require('../models/user.Model');
-
-passportLocal.use(new LocalStrategy({ usernameField: 'email' }, async (email, password, done) => {
+passport.use(new LocalStrategy({ usernameField: 'email' }, async (email, password, done) => {
     try {
         const user = await User.findOne({ email: email });
 
@@ -14,10 +16,9 @@ passportLocal.use(new LocalStrategy({ usernameField: 'email' }, async (email, pa
             return done(null, false, { message: 'User not found' });
         }
 
-        const hashedPassword = await hashingstr.hash(HashAlgo, password, user.password);
+        const x = await hashingstr.hash(HashAlgo, password);
 
-        if (hashedPassword) {
-            // Passwords match
+        if(x == user.password){
             return done(null, user);
         } else {
             // Passwords do not match
@@ -28,18 +29,15 @@ passportLocal.use(new LocalStrategy({ usernameField: 'email' }, async (email, pa
     }
 }));
 
-
-passportLocal.serializeUser((user, done) => {
+passport.serializeUser((user, done) => {
     done(null, user.id);
 });
 
 // Deserialize user from session
-passportLocal.deserializeUser((id, done) => {
+passport.deserializeUser((id, done) => {
     User.findById(id, (err, user) => {
         done(err, user);
     });
 });
 
-
-
-module.exports = passportLocal;
+export default passport;

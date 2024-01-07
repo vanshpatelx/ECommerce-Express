@@ -1,19 +1,26 @@
-const router = require('express').Router();
-const orderCtrl = require('../controllers/order.Ctrl');
-const authenticateJWT = require('../middleware/JWTMiddleware');
-const {checkCustomerRegistration, checkSellerRegistration} = require('../middleware/checkRegistration');
+import express from 'express';
+const router = express.Router();
 
+import {
+    webhook,
+    checkout,
+    updateOrderStatus,
+    getAllOrdersCustomer,
+    getOrderCustomer,
+    getAllOrdersSeller,
+    getOrderSeller
+} from '../controllers/order.Ctrl.js';
+import authenticateJWT from '../middleware/JWTMiddleware.js';
+import { checkCustomerRegistration, checkSellerRegistration } from '../middleware/checkRegistration.js';
 
-router.post('/checkout', authenticateJWT, checkCustomerRegistration, orderCtrl.checkout);
-router.post('/webhook', authenticateJWT, orderCtrl.webhook);
+router.post('/checkout', authenticateJWT, checkCustomerRegistration, checkout);
+router.post('/webhook', authenticateJWT, webhook);
 
-router.patch('/order/status', authenticateJWT, checkSellerRegistration, orderCtrl.updateOrderStatus);
+router.patch('/order/status', authenticateJWT, checkSellerRegistration, updateOrderStatus);
 
-router.get('/orders/customer', authenticateJWT, checkCustomerRegistration, orderCtrl.getAllOrdersCustomer);
-router.get('/orders/customer', authenticateJWT, checkCustomerRegistration, orderCtrl.getOrderCustomer);
-router.get('/orders/seller', authenticateJWT, checkSellerRegistration, orderCtrl.getAllOrdersSeller);
-router.get('/orders/seller', authenticateJWT, checkSellerRegistration, orderCtrl.getOrderSeller);
+router.get('/orders/customer', authenticateJWT, checkCustomerRegistration, getAllOrdersCustomer);
+router.get('/orders/customer', authenticateJWT, checkCustomerRegistration, getOrderCustomer);
+router.get('/orders/seller', authenticateJWT, checkSellerRegistration, getAllOrdersSeller);
+router.get('/orders/seller', authenticateJWT, checkSellerRegistration, getOrderSeller);
 
-
-
-module.exports = router;
+export default router;

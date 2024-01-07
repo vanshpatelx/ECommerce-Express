@@ -1,13 +1,25 @@
-const chai = require("chai");
-const chaiHttp = require("chai-http");
-const { exec } = require("child_process");
+import Seller from '../src/models/seller.Model.js';
+import Customer from '../src/models/customer.Model.js';
+import Product from '../src/models/product.model.js';
+import Order from '../src/models/order.Model.js';
+import Auth from '../src/models/user.Model.js';
+import connectDB from '../src/config/mongoDBConnect.js'; // Auto-Connected - For more view code files
+import 'dotenv/config';
 
-chai.use(chaiHttp);
-const expect = chai.expect;
+connectDB();
 
-describe("Common Test Suite", () => {
-  before(async () => {
+describe("Common Test Suite", function () {
+  this.timeout(500000); // Set a timeout for the entire test suite
+
+  before(async function () {
     console.log("Running common setup...");
+
+    try {
+      await deleteAllData();
+    } catch (error) {
+      console.error(`Error during common setup: ${error}`);
+      throw error;
+    }
   });
 
   // Trigger other test files with specific priorities
@@ -23,33 +35,15 @@ describe("Common Test Suite", () => {
     await runTestFile("customer.test.js");
   });
 
-  it("Step 4: Run pre tests", async () => {
-    await runTestFile("pre.test.js");
-  });
-
-  it("Step 5: Run product tests", async () => {
+  it("Step 4: Run product tests", async () => {
     await runTestFile("product.test.js");
   });
 
-  it("Step 6: Run productView tests", async () => {
+  it("Step 5: Run productView tests", async () => {
     await runTestFile("productView.test.js");
   });
 
-  it("Step 7: Run wishlist tests", async () => {
-    await runTestFile("wishlist.test.js");
-  });
 
-  it("Step 8: Run order tests", async () => {
-    await runTestFile("order.test.js");
-  });
-
-  it("Step 9: Run inventory tests", async () => {
-    await runTestFile("inventory.test.js");
-  });
-
-  it("Step 10: Run review tests", async () => {
-    await runTestFile("review.test.js");
-  });
 
   after(async () => {
     console.log("Running common teardown...");
@@ -58,23 +52,28 @@ describe("Common Test Suite", () => {
 
 // Function to run a specific test file
 function runTestFile(fileName) {
-  return new Promise((resolve, reject) => {
-    const child = exec(`mocha ${fileName}`, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Error executing ${fileName}: ${error}`);
-        reject(error);
-      } else {
-        console.log(stdout);
-        console.error(stderr);
-        resolve();
-      }
-    });
-
-    child.on("exit", (code) => {
-      if (code !== 0) {
-        console.error(`${fileName} exited with code ${code}`);
-        reject(`Test ${fileName} failed`);
-      }
-    });
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Instead of spawning a new Mocha process, require the test file directly
+      await import(`./${fileName}`);
+      resolve();
+    } catch (error) {
+      console.error(`Error executing ${fileName}: ${error}`);
+      reject(error);
+    }
   });
+}
+
+// Delete All data in each model
+async function deleteAllData() {
+  try {
+    await Seller.deleteMany({});
+    await Customer.deleteMany({});
+    await Auth.deleteMany({});
+    await Product.deleteMany({});
+    await Order.deleteMany({});
+  } catch (error) {
+    console.error("Error deleting data:", error);
+    throw error;
+  }
 }

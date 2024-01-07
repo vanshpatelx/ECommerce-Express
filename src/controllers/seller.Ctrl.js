@@ -1,6 +1,5 @@
-const sellerModel = require("../models/seller.Model");
-const userModel = require("../models/user.Model");
-
+import sellerModel from "../models/seller.Model.js";
+import userModel from "../models/user.Model.js";
 
 const getInventory = async (req, res) => {
     try {
@@ -26,20 +25,19 @@ const addSeller = async (req, res) => {
         const user_id = req.user.sub;
         const { seller_address, contact_info } = req.body;
 
-        if (!seller_address && !contact_info) {
+        if (!seller_address || !contact_info) {
             return res.status(400).json({
                 message: 'Fill all fields in Seller registration'
             });
         }
 
         // Is already registered? Check in DB
-        const isAlreadyExists = await sellerModel.findOne({ user_id: user_id });
-        if (isAlreadyExists) {
+        const isAlreadyExists = await sellerModel.find({ user_id: user_id });
+        if (isAlreadyExists.length != 0) {
             return res.status(400).json({
                 message: 'Seller is already registered'
             });
         }
-
 
         const Seller = new sellerModel({
             user_id: user_id,
@@ -49,12 +47,10 @@ const addSeller = async (req, res) => {
             order_info: []
         });
 
-
         const newSeller = await Seller.save();
 
         // Update the user document with the seller_id
         const userToUpdate = await userModel.findOne({ _id: user_id, type: 'Seller' });
-
 
         if (userToUpdate) {
             // If the user type is 'Seller', update the seller_id
@@ -80,13 +76,13 @@ const updateSeller = async (req, res) => {
             });
         }
 
-        if(seller_address){
+        if (seller_address) {
             req.sellerData.seller_address = seller_address;
         }
-        if(contact_info){
+        if (contact_info) {
             req.sellerData.contact_info = contact_info;
         }
-        
+
         await req.sellerData.save();
         // await sellerModel.findOneAndUpdate({
         //     user_id: user_id
@@ -101,8 +97,8 @@ const updateSeller = async (req, res) => {
     }
 };
 
-module.exports = {
+export {
     getInventory,
     addSeller,
     updateSeller
-}
+};

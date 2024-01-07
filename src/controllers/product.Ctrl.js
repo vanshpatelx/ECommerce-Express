@@ -1,17 +1,14 @@
-const sellerModel = require("../models/seller.Model");
-const { getImageUrls, deleteImage } = require('../config/ImageUpload');
-const productModel = require("../models/product.model");
-const customerModel = require("../models/customer.Model");
+import sellerModel from "../models/seller.Model.js";
+import { getImageUrls, deleteImage } from '../config/ImageUpload.js';
+import productModel from "../models/product.model.js";
 
 const creatProduct = async (req, res) => {
     try {
         const { name, real_price, qty, discounted_rate } = req.body;
-
         const imageUrls = await getImageUrls(req.files);
-
         if (!name || !real_price || !qty || !discounted_rate || !imageUrls) {
             return res.status(400).json({
-                message: 'Fill all fields in Product Creat'
+                message: 'Fill all fields in Product Create'
             });
         }
 
@@ -34,8 +31,7 @@ const creatProduct = async (req, res) => {
             { new: true } // option returns the modified document
         );
 
-
-        return res.status(200).json({ message: 'Product added successfully' });
+        return res.status(200).json({ message: 'Product added successfully', productId : product._id });
     } catch (err) {
         console.error(err);
         return res.status(500).json({ message: 'Error in Adding Product' });
@@ -45,11 +41,10 @@ const creatProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
     try {
         const productId = req.query.productId;
-
+        
         const { name, real_price, qty, discounted_rate, deleteImages } = req.body;
-
+        
         let imageUrls = null;
-
         // Check if new images are provided
         if (req.files && req.files.length !== 0) {
             imageUrls = await getImageUrls(req.files);
@@ -145,7 +140,6 @@ const updateProduct = async (req, res) => {
     }
 };
 
-
 const deleteProduct = async (req, res) => {
     try {
         const productId = req.query.productId;
@@ -167,7 +161,6 @@ const deleteProduct = async (req, res) => {
 
         // Delete images associated with the product from Cloudinary
         let allImagesDeleted = true;  // Assume all images are deleted successfully
-
 
         for (const imageUrl of existingProduct.image_urls) {
             const deleteResult = await deleteImage(imageUrl);
@@ -210,6 +203,7 @@ const getProduct = async (req, res) => {
                 message: 'Product not found'
             });
         }
+        console.log(existingProduct);
 
         // Hide Details
         existingProduct.seller = null;
@@ -264,7 +258,6 @@ const getAllProductBySeller = async (req, res) => {
         // Extract product information from the populated field
         const products = seller.product_inventory.map((item) => item.product);
 
-
         return res.status(200).json({
             message: 'Fetched Specific Seller\'s Products',
             products
@@ -276,11 +269,6 @@ const getAllProductBySeller = async (req, res) => {
         });
     }
 };
-
-
-// const getAllProductBySearch = async (req, res) => {
-
-// };
 
 const getAllReviewOfProduct = async (req, res) => {
     try {
@@ -295,7 +283,6 @@ const getAllReviewOfProduct = async (req, res) => {
                 message: 'Product not found'
             });
         }
-
 
         const formattedReviews = product.reviews.map((review) => ({
             _id: review._id,
@@ -314,8 +301,6 @@ const getAllReviewOfProduct = async (req, res) => {
         });
     }
 };
-
-
 
 const createReview = async (req, res) => {
     try {
@@ -411,7 +396,6 @@ const updateReview = async (req, res) => {
     }
 };
 
-
 const deleteReview = async (req, res) => {
     try {
         // Get Information from Body
@@ -452,7 +436,6 @@ const deleteReview = async (req, res) => {
     }
 };
 
-
 const getAllReviewForSeller = async (req, res) => {
     try {
         // Extract product information from the populated field
@@ -478,18 +461,16 @@ const getAllReviewForSeller = async (req, res) => {
     }
 };
 
-
-module.exports = {
+export {
     creatProduct,
     updateProduct,
     deleteProduct,
     getAllProduct,
     getProduct,
-    // getAllProductBySearch,
     getAllProductBySeller,
     getAllReviewOfProduct,
     createReview,
     updateReview,
     deleteReview,
     getAllReviewForSeller
-}
+};

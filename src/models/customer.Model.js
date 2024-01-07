@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const addressSchema = new mongoose.Schema({
     street_name: {
@@ -21,7 +21,7 @@ const addressSchema = new mongoose.Schema({
             type: String,
         }
     }
-})
+});
 
 const contactSchema = new mongoose.Schema({
     num: {
@@ -59,7 +59,6 @@ const order = new mongoose.Schema({
     }
 });
 
-
 const customerSchema = new mongoose.Schema({
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -83,6 +82,4 @@ const customerSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
-module.exports = mongoose.model('Customer', customerSchema);
-
-
+export default mongoose.model('Customer', customerSchema);

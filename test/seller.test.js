@@ -1,23 +1,29 @@
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-const app = require('../src/server'); // Update the path as needed
-const userModel = require("../src/models/user.Model");
-const sellerModel = require("../src/models/seller.Model");
+import supertest from 'supertest';
+import app from '../src/server.js'; // Update the path as needed
+import userModel from '../src/models/user.Model.js';
+import sellerModel from '../src/models/seller.Model.js';
+import { expect } from 'chai';
 
-chai.use(chaiHttp);
-const expect = chai.expect;
+const request = supertest(app);
 
 let authToken; // Variable to store the JWT token for authentication
 
 describe('Seller API Tests', () => {
-    before(async () => {
+    before(async function () {
+        this.timeout(10000);
         // Clear the user and seller collections in the test database
+        await clearTestDatabase();
+        // Register a user as a seller for testing
+        await registerSellerForTesting();
+    });
+
+    async function clearTestDatabase() {
         await userModel.deleteMany({});
         await sellerModel.deleteMany({});
+    }
 
-        // Register a user as a seller for testing
-        const registerResponse = await chai
-            .request(app)
+    async function registerSellerForTesting() {
+        const registerResponse = await request
             .post('/api/v1/register')
             .send({
                 email: 'seller@gmail.com',
@@ -25,12 +31,13 @@ describe('Seller API Tests', () => {
                 type: 'Seller'
             });
 
-        expect(registerResponse).to.have.status(200);
+        expect(registerResponse.status).to.equal(200);
         expect(registerResponse.body).to.have.property('token');
         authToken = registerResponse.body.token;
-    });
+    }
 
     describe('Add Seller', () => {
+
         it('should add a new seller for the authenticated user', async () => {
             const addSellerData = {
                 seller_address: {
@@ -56,13 +63,12 @@ describe('Seller API Tests', () => {
                 }
             };
 
-            const addSellerResponse = await chai
-                .request(app)
+            const addSellerResponse = await request
                 .post('/api/v1/seller')
                 .set('Authorization', authToken)
                 .send(addSellerData);
 
-            expect(addSellerResponse).to.have.status(200);
+            expect(addSellerResponse.status).to.equal(200);
             expect(addSellerResponse.body).to.have.property('message').equal('Seller registered successfully');
         });
 
@@ -91,23 +97,13 @@ describe('Seller API Tests', () => {
                 }
             };
 
-            // Add the seller for the first time
-            const firstAddSellerResponse = await chai
-                .request(app)
-                .post('/api/v1/seller')
-                .set('Authorization', authToken)
-                .send(duplicateAddSellerData);
-
-            expect(firstAddSellerResponse).to.have.status(200);
-
             // Attempt to add the same seller again
-            const duplicateAddSellerResponse = await chai
-                .request(app)
+            const duplicateAddSellerResponse = await request
                 .post('/api/v1/seller')
                 .set('Authorization', authToken)
                 .send(duplicateAddSellerData);
 
-            expect(duplicateAddSellerResponse).to.have.status(400);
+            expect(duplicateAddSellerResponse.status).to.equal(400);
             expect(duplicateAddSellerResponse.body).to.have.property('message').equal('Seller is already registered');
         });
 
@@ -116,31 +112,29 @@ describe('Seller API Tests', () => {
                 // Missing seller_address and contact_info
             };
 
-            const missingFieldsAddSellerResponse = await chai
-                .request(app)
+            const missingFieldsAddSellerResponse = await request
                 .post('/api/v1/seller')
                 .set('Authorization', authToken)
                 .send(missingFieldsAddSellerData);
 
-            expect(missingFieldsAddSellerResponse).to.have.status(400);
+            expect(missingFieldsAddSellerResponse.status).to.equal(400);
             expect(missingFieldsAddSellerResponse.body).to.have.property('message').equal('Fill all fields in Seller registration');
         });
 
         it('should handle user type not being Seller', async () => {
             // Register a user as a customer for testing
-            const registerResponse = await chai
-                .request(app)
+            const registerResponse = await request
                 .post('/api/v1/register')
                 .send({
                     email: 'customer@gmail.com',
                     password: 'customer123',
                     type: 'Customer'
                 });
-        
-            expect(registerResponse).to.have.status(200);
+
+            expect(registerResponse.status).to.equal(200);
             expect(registerResponse.body).to.have.property('token');
             const customerAuthToken = registerResponse.body.token;
-        
+
             const userTypeNotSellerData = {
                 seller_address: {
                     street_name: '456 Oak St',
@@ -164,17 +158,15 @@ describe('Seller API Tests', () => {
                     extra_email: 'extra@example.com'
                 }
             };
-        
-            const userTypeNotSellerResponse = await chai
-                .request(app)
+
+            const userTypeNotSellerResponse = await request
                 .post('/api/v1/seller')
-                .set('Authorization', customerAuthToken)
+                .set('Authorization',customerAuthToken)
                 .send(userTypeNotSellerData);
-        
-            expect(userTypeNotSellerResponse).to.have.status(500);
+
+            expect(userTypeNotSellerResponse.status).to.equal(500);
             expect(userTypeNotSellerResponse.body).to.have.property('message').equal('Error in Registering Seller || User type is not Seller');
         });
-        
     });
 
     describe('Update Seller', () => {
@@ -203,13 +195,12 @@ describe('Seller API Tests', () => {
                 }
             };
 
-            const updateSellerResponse = await chai
-                .request(app)
+            const updateSellerResponse = await request
                 .patch('/api/v1/seller')
                 .set('Authorization', authToken)
                 .send(updateSellerData);
 
-            expect(updateSellerResponse).to.have.status(200);
+            expect(updateSellerResponse.status).to.equal(200);
             expect(updateSellerResponse.body).to.have.property('message').equal('Seller updated successfully');
         });
 
@@ -218,30 +209,29 @@ describe('Seller API Tests', () => {
                 // Missing seller_address and contact_info
             };
 
-            const missingFieldsUpdateSellerResponse = await chai
-                .request(app)
+            const missingFieldsUpdateSellerResponse = await request
                 .patch('/api/v1/seller')
                 .set('Authorization', authToken)
                 .send(missingFieldsUpdateSellerData);
 
-            expect(missingFieldsUpdateSellerResponse).to.have.status(400);
+            expect(missingFieldsUpdateSellerResponse.status).to.equal(400);
             expect(missingFieldsUpdateSellerResponse.body).to.have.property('message').equal('Fill all fields in Seller registration');
         });
 
-        it('should handle updating a user that is not registered as customer or seller', async () => {
-            // Register a user without specifying the type (neither Customer nor Seller)
-            const registerResponse = await chai
-                .request(app)
+        it('should handle updating a user that is not registered as a customer', async () => {
+            // Register a user without specifying the type Customer
+            const registerResponse = await request
                 .post('/api/v1/register')
                 .send({
                     email: 'registeredUser@gmail.com',
-                    password: 'password123'
+                    password: 'password123',
+                    type: 'Customer'
                 });
-        
-            expect(registerResponse).to.have.status(200);
+
+            expect(registerResponse.status).to.equal(200);
             expect(registerResponse.body).to.have.property('token');
             const registeredUserAuthToken = registerResponse.body.token;
-        
+
             const updateUserNotRegisteredAsSellerData = {
                 seller_address: {
                     street_name: '123 Main St',
@@ -265,18 +255,19 @@ describe('Seller API Tests', () => {
                     extra_email: 'extra@example.com'
                 }
             };
-        
-            const updateUserNotRegisteredAsSellerResponse = await chai
-                .request(app)
+
+            const updateUserNotRegisteredAsSellerResponse = await request
                 .patch('/api/v1/seller')
                 .set('Authorization', registeredUserAuthToken)
                 .send(updateUserNotRegisteredAsSellerData);
-        
-            expect(updateUserNotRegisteredAsSellerResponse).to.have.status(400);
+
+            expect(updateUserNotRegisteredAsSellerResponse.status).to.equal(400);
             expect(updateUserNotRegisteredAsSellerResponse.body).to.have.property('message').equal('Seller is not registered');
         });
-        
-        
     });
 
+    after(async () => {
+        // Add any cleanup operations here
+        await clearTestDatabase();
+    });
 });

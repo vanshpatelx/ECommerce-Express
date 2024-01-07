@@ -1,24 +1,26 @@
-const stripe = require('stripe')(process.env.StripeAPIKey);
+import { loadStripe } from '@stripe/stripe-js';
 
-function customRound(number, condition) {
-    return condition ? Math.ceil(number) : Math.floor(number);
-}
+// Load the Stripe instance with the API key
+const stripe = await loadStripe(process.env.StripeAPIKey);
 
+// Function to create a charge
 async function createCharge(token, amount, description) {
-  try {
-    const charge = await stripe.charges.create({
-      amount: Number(customRound(amount, amount % 1 >= 0.5)), // amount in cents
-      currency: 'usd',
-      source: token,
-      description: description,
-    });
+    try {
+        const roundedAmount = Math.round(amount);
 
-    return charge;
-  } catch (error) {
-    throw error;
-  }
+        // Use the loaded Stripe instance to create a charge
+        const charge = await stripe.charges.create({
+            amount: roundedAmount, // amount in cents
+            currency: 'usd',
+            source: token,
+            description,
+        });
+
+        return charge;
+    } catch (error) {
+        throw error;
+    }
 }
 
-module.exports = {
-  createCharge
-};
+// Export the createCharge function
+export { createCharge };

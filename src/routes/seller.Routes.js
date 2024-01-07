@@ -1,11 +1,16 @@
-const router = require('express').Router();
-const sellerCtrl = require('../controllers/seller.Ctrl');
-const authenticateJWT = require('../middleware/JWTMiddleware');
-const {checkSellerRegistration} = require('../middleware/checkRegistration');
+import express from 'express';
+const router = express.Router();
 
+import {
+    getInventory,
+    addSeller,
+    updateSeller
+} from '../controllers/seller.Ctrl.js';
+import authenticateJWT from '../middleware/JWTMiddleware.js';
+import { checkSellerRegistration } from '../middleware/checkRegistration.js';
 
-router.get('/seller/inventory', authenticateJWT, checkSellerRegistration, sellerCtrl.getInventory);
-router.post('/seller', authenticateJWT, sellerCtrl.addSeller);
-router.patch('/seller', authenticateJWT, checkSellerRegistration, sellerCtrl.updateSeller);
+router.get('/seller/inventory', authenticateJWT, checkSellerRegistration, getInventory);
+router.post('/seller', authenticateJWT, addSeller);
+router.patch('/seller', authenticateJWT, checkSellerRegistration, updateSeller);
 
-module.exports = router;
+export default router;

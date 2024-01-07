@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
     email: {
@@ -14,16 +14,19 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ['Seller', 'Customer'],
         required: true,
-        default : 'Customer'
+        default: 'Customer'
     },
-    seller_id : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : 'Seller'
+    seller_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Seller'
     },
-    customer_id : {
-        type : mongoose.Schema.Types.ObjectId,
-        ref : 'Customer'
+    customer_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Customer'
     }
-}, {timestamps: true});
+}, { timestamps: true });
 
-module.exports = mongoose.model('User', userSchema);
+// Indexes for frequently queried fields
+userSchema.index({ email: 1 });
+
+export default mongoose.model('User', userSchema);

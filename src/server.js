@@ -1,25 +1,28 @@
-const express = require('express');
+import express from 'express';
 const app = express();
-require('dotenv').config();
+import 'dotenv/config'
 const PORT = process.env.PORT;
-const passportLocal = require('./auth/local.Passport');
-const passportJWT = require('./auth/jwt.Passport'); 
-require('./config/mongoDBConnect'); // Auto-Connected - For more view code files
-
+import passport from './auth/local.Passport.js';
+import passportJWT from './auth/jwt.Passport.js'; 
+import connectDB from './config/mongoDBConnect.js'; // Auto-Connected - For more view code files
+import bodyParser from 'body-parser';
+connectDB();
+import morgan from 'morgan';
 
 // Middlewares
+app.use(morgan('combined'));
 app.use(express.json());
+app.use(bodyParser.json())
 app.use(express.urlencoded({ extended: false }));
-app.use(passportLocal.initialize());
+app.use(passport.initialize());
 app.use(passportJWT.initialize());
 
-
 // Routes Imports
-const AuthRoutes = require('./routes/auth.Routes');
-const CustomerRoutes = require('./routes/customer.Routes');
-const OrderRoutes = require('./routes/order.Routes');
-const ProductRoutes = require('./routes/product.Routes');
-const SellerRoutes = require('./routes/seller.Routes');
+import AuthRoutes from './routes/auth.Routes.js';
+import CustomerRoutes from './routes/customer.Routes.js';
+import OrderRoutes from './routes/order.Routes.js';
+import ProductRoutes from './routes/product.Routes.js';
+import SellerRoutes from './routes/seller.Routes.js';
 
 app.use('/api/v1', AuthRoutes);
 app.use('/api/v1', CustomerRoutes);
@@ -27,7 +30,8 @@ app.use('/api/v1', OrderRoutes);
 app.use('/api/v1', ProductRoutes);
 app.use('/api/v1', SellerRoutes);
 
-
 app.listen(PORT, () => {
     console.log(`Server is running on ${PORT}`);
-})
+});
+
+export default app;

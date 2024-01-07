@@ -1,9 +1,6 @@
-const customerModel = require("../models/customer.Model");
-const productModel = require("../models/product.model");
-const { createCharge, handleWebhookEvent } = require("../config/StripePayment");
-const orderModel = require("../models/order.Model");
-const sellerModel = require("../models/seller.Model");
-
+import productModel from "../models/product.model.js";
+import { createCharge } from "../config/StripePayment.js";
+import orderModel from "../models/order.Model.js";
 
 const checkout = async (req, res) => {
     try {
@@ -62,11 +59,9 @@ const checkout = async (req, res) => {
     }
 };
 
-
 const webhook = (req, res) => {
     handleWebhookEvent(req, res);
 };
-
 
 const createOrder = async (orderDetails) => {
     let order_id;
@@ -118,7 +113,7 @@ const createOrder = async (orderDetails) => {
             },
             status: "Placed Order",
             shippingAddress: shippingAddress
-        }
+        };
         return orderRes;
     } catch (err) {
         console.error(err);
@@ -148,7 +143,6 @@ const updateOrderStatus = async (req, res) => {
         res.status(500).json({ message: 'Error in Update Order Status' });
     }
 };
-
 
 const getAllOrdersCustomer = async (req, res) => {
     try {
@@ -180,7 +174,6 @@ const getOrderCustomer = async (req, res) => {
 
         res.status(200).json({ message: 'Order data successfully', responseData: orderData });
 
-
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error in getting Order detail' });
@@ -200,7 +193,7 @@ const getAllOrdersSeller = async (req, res) => {
 const getOrderSeller = async (req, res) => {
     try {
         const { orderId } = req.body;
-        
+
         // Check if orderId exists in the customerData.order_info array
         const orderExists = req.sellerData.order_info.some(order => order.equals(orderId));
 
@@ -220,16 +213,14 @@ const getOrderSeller = async (req, res) => {
         console.error(error);
         res.status(500).json({ message: 'Error in Get All Orders' });
     }
-
 };
 
-module.exports = {
+export {
     webhook,
     checkout,
-    createOrder,
     updateOrderStatus,
     getAllOrdersCustomer,
     getOrderCustomer,
     getAllOrdersSeller,
     getOrderSeller
-}
+};

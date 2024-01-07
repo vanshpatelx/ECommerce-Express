@@ -1,57 +1,44 @@
-const multer = require('multer');
-const cloudinary = require('cloudinary').v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
+import multer from 'multer';
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
 
-// Configure Cloudinary
 cloudinary.config({
-  cloud_name: process.env.CloudName,
-  api_key: process.env.APIKey,
-  api_secret: process.env.APISecret,
+    cloud_name: process.env.CloudName,
+    api_key: process.env.APIKey,
+    api_secret: process.env.APISecret,
 });
 
-// Set up multer for handling file uploads with streaming
 const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  folder: 'product-images',
-  allowedFormats: ['jpg', 'jpeg', 'png'],
-  transformation: [{ width: 500, height: 500, crop: 'limit' }],
+    cloudinary: cloudinary,
+    folder: 'product-images',
+    allowedFormats: ['jpg', 'jpeg', 'png'],
+    transformation: [{ width: 500, height: 500, crop: 'limit' }],
 });
-
 
 const upload = multer({ storage: storage });
 
 const uploadImages = (fieldName, maxCount) => {
-  return upload.array(fieldName, maxCount);
+    return upload.array(fieldName, maxCount);
 };
 
 const getImageUrls = (files) => {
-  return files.map((file) => file.path);
+    return files.map((file) => file.path);
 };
 
-
-// Function to delete an image from Cloudinary based on its public ID
 const deleteImage = async (imageUrl) => {
-  try {
+    try {
+        const publicId = imageUrl.split('/').pop().split('.')[0];
+        const result = await cloudinary.uploader.destroy(publicId);
 
-    // Extract the public ID from the Cloudinary URL
-    const publicId = imageUrl.split('/').pop().split('.')[0];
-
-    // Delete the image using the public ID
-    const result = await cloudinary.uploader.destroy(publicId);
-
-    console.log(result);
-
-    if (result.result === 'ok') {
-      return { success: true, message: 'Image deleted successfully' };
-    } else {
-      return { success: false, message: 'Failed to delete image from Cloudinary' };
+        if (result.result === 'ok') {
+            return { success: true, message: 'Image deleted successfully' };
+        } else {
+            return { success: false, message: 'Failed to delete image from Cloudinary' };
+        }
+    } catch (error) {
+        console.error(error);
+        return { success: false, message: 'Error deleting image from Cloudinary' };
     }
-  } catch (error) {
-    console.error(error);
-    return { success: false, message: 'Error deleting image from Cloudinary' };
-  }
 };
 
-
-
-module.exports = { uploadImages, getImageUrls, deleteImage };
+export { uploadImages, getImageUrls, deleteImage };

@@ -1,5 +1,6 @@
+import jwt from 'jsonwebtoken';
+
 const JWT_SECRET = process.env.JWT_SECRET;
-const jwt = require('jsonwebtoken');
 
 const generateToken = async (user) => {
     const payload = {
@@ -9,9 +10,9 @@ const generateToken = async (user) => {
     const options = {
         expiresIn: '7d',
     };
-    const token =  await jwt.sign(payload, JWT_SECRET, options);
+    const token = await jwt.sign(payload, JWT_SECRET, options);
 
     return token;
-}
+};
 
-module.exports = generateToken;
+export default generateToken;

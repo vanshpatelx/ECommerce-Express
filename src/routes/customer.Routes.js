@@ -1,16 +1,22 @@
-const router = require('express').Router();
-const customerCtrl = require('../controllers/customer.Ctrl');
-const authenticateJWT = require('../middleware/JWTMiddleware');
-const {checkCustomerRegistration} = require('../middleware/checkRegistration');
+import express from 'express';
+const router = express.Router();
 
+import {
+    addCustomer,
+    updateCustomer,
+    getWishlist,
+    addWishlist,
+    deleteWishlist
+} from '../controllers/customer.Ctrl.js';
+import authenticateJWT from '../middleware/JWTMiddleware.js';
+import { checkCustomerRegistration } from '../middleware/checkRegistration.js';
 
-router.post('/customer', authenticateJWT, customerCtrl.addCustomer);
-router.patch('/customer',authenticateJWT, checkCustomerRegistration, customerCtrl.updateCustomer);
+router.post('/customer', authenticateJWT, addCustomer);
+router.patch('/customer', authenticateJWT, checkCustomerRegistration, updateCustomer);
 
 // wishlist
-router.get('/customer/wishlist', authenticateJWT , checkCustomerRegistration, customerCtrl.getWishlist);
-router.post('/customer/wishlist', authenticateJWT, checkCustomerRegistration, customerCtrl.addWishlist);
-router.delete('/customer/wishlist', authenticateJWT, checkCustomerRegistration, customerCtrl.deleteWishlist);
+router.get('/customer/wishlist', authenticateJWT, checkCustomerRegistration, getWishlist);
+router.post('/customer/wishlist', authenticateJWT, checkCustomerRegistration, addWishlist);
+router.delete('/customer/wishlist', authenticateJWT, checkCustomerRegistration, deleteWishlist);
 
-
-module.exports = router;
+export default router;
